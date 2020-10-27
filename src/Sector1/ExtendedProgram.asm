@@ -2,6 +2,7 @@
 jmp EnterProtectedMode ; Enter 32-bit Protected Mode
 
 %include "src/Sector1/GDT.asm"
+%include "src/Sector0/Print.asm"
 
 EnterProtectedMode: ; Enter 32-bit Protected Mode
     call EnableA20
@@ -20,7 +21,6 @@ EnableA20:
 
 [bits 32]
 
-%include "src/Sector0/Print.asm"
 %include "src/Sector1/CPUID.asm"
 %include "src/Sector1/SimplePaging.asm"
 
@@ -50,5 +50,7 @@ Start64Bit:
     call _StartKernel
 
     jmp $
+
+[bits 32]
 
 times 2048-($-$$) db 0 ; Fill the rest of the sectors with 0

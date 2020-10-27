@@ -6,7 +6,7 @@ gdt_nulldesc:
 gdt_codedesc:
     dw 0xFFFF        ; Limit
     dw 0x0000        ; Base Low
-    db 0x0000        ; Base Med
+    db 0x00          ; Base Med
     db 10011010b     ; Flags
     db 11001111b     ; Flags + Upper Limit
     db 0x00          ; Base High
@@ -14,7 +14,7 @@ gdt_codedesc:
 gdt_datadesc:
     dw 0xFFFF        ; Limit
     dw 0x0000        ; Base Low
-    db 0x0000        ; Base Med
+    db 0x00          ; Base Med
     db 10010010b     ; Flags
     db 11001111b     ; Flags + Upper Limit
     db 0x00          ; Base High

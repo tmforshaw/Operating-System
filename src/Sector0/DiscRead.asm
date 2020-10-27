@@ -1,5 +1,5 @@
 
-PROGRAM_SPACE equ 0x7E00 ; Define PROGRAM_SPACE as memory address 0x7E00
+PROGRAM_SPACE equ 0x8000 ; Define PROGRAM_SPACE as memory address 0x8000
 
 ReadDisk:
     mov ah, 0x02

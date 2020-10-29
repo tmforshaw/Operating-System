@@ -8,10 +8,11 @@ A simple 64-Bit operating system that I made using resources on the internet and
 ------------------------
 
 ## Table of Contents
-	* [How I created it](https://github.com/tmforshaw/Operating-System#how-i-created-it)
-	* [How to run](https://github.com/tmforshaw/Operating-System#how-to-run)
-	* [What there currently is](https://github.com/tmforshaw/Operating-System#what-there-currently-is)
-	* [What I plan to include](https://github.com/tmforshaw/Operating-System#what-i-plan-to-include)
+
+  * [How I created it](#how-i-created-it)
+  * [How to run](#how-to-run)
+  * [What there currently is](#what-there-currently-is)
+  * [What I plan to include](#what-i-plan-to-include)
 
 ------------------------
 
@@ -53,7 +54,7 @@ This will start the virtual machine.
  * More input/output functions
  * Try to enhance User Interface
 
-========================
+------------------------
 
 # License
 I do not have any professional licenses on this work, you are free to use it however you want. I'd be glad to know where you are using it if you do.

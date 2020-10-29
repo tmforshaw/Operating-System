@@ -5,7 +5,7 @@
 ## Description
 A simple 64-Bit operating system that I made using resources on the internet and YouTube. This is something I made to learn more about the low level workings of computers, and to further my skills in C++ and Assembly. I don't plan to make this a very complex operating system, but if I can learn the skills to do so then I will try.
 
-------------------------
+#
 
 ## Table of Contents
 
@@ -14,12 +14,12 @@ A simple 64-Bit operating system that I made using resources on the internet and
   * [What there currently is](#what-there-currently-is)
   * [What I plan to include](#what-i-plan-to-include)
 
-------------------------
+#
 
 ## How I created it
 I used visual studio code on linux mint. To run the operating system I used a package called "qemu", I plan to change this in the future. I used a Makefile to compile and run the code easily. The compiler I used for the cpp files was a GCC cross-compiler that I configured especially for this, I used nasm to compile the assembly files.
 
-------------------------
+#
 
 ## How to run
 To run the operating system on linux you must first install qemu, for debian-based architecture run the command:
@@ -35,7 +35,7 @@ Once it is installed you can change directory to the bin/ directory and run the 
 	
 This will start the virtual machine.
 
-------------------------
+#
 
 ## What there currently is
 	* Bootloader that boots into 16-Bit mode, then 32-Bit mode, 64-Bit mode, and then starts the kernel
@@ -47,7 +47,7 @@ This will start the virtual machine.
 	* Memory Map to track memory regions
 	* Ability to include binary files (.txt, .bmp, etc.)
 	
-------------------------
+#
 
 ## What I plan to include 
  * Terminal-like functions

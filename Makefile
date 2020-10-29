@@ -63,6 +63,8 @@ define partial_clean
 		rm -r $(OUTDIR) && \
 		mkdir $(OUTDIR) && \
 		cp $(TEMPDIR)Bootloader.bin $(OUTDIR) && \
+		rm -r $(TEMPDIR) && \
+		mkdir $(TEMPDIR) && \
 		echo $(OUTPUTPREFIX)Cleaned without removing Bootloader.bin \
 	|| \
 		($(call single_line_full_clean) && \

@@ -4,6 +4,7 @@
 namespace CLI
 {
 	extern const char* commands[];
+	extern uint_16 FirstPosition;
 
 	void PrintPrefix();
 	void Initialise();

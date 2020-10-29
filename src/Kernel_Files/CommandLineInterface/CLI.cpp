@@ -1,15 +1,12 @@
 #include "../InputOutput/Text/TextPrint.hpp"
+#include "../Types/String.hpp"
 #include "CLI.hpp"
 
 namespace CLI
 {
 	const char* outPrefix = "$ ";
 
-	// int size = 0;
-	// while (outPrefix[size] != 0) size++; // Null-terminated
-
-	// const uint_8 prefixLen
-	// 	= outPrefix.size();
+	uint_16 FirstPosition = 2;
 
 	// clang-format off
 	const char* commands[] = {

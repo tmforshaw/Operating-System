@@ -1,7 +1,7 @@
 #pragma once
 
-namespace cus // Custom
+namespace Type // Custom
 {
-	class string;
+	class String;
 
-} // Namespace cus
+} // namespace Type

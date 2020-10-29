@@ -4,6 +4,8 @@
 #include "../InputOutput/Text/TextPrint.hpp"
 #include "../Memory/Heap.hpp"
 #include "../Memory/MemoryMap.hpp"
+#include "../Types/String.hpp"
+#include "../Types/Types.hpp"
 
 extern "C" void _StartKernel()
 {

@@ -1,3 +1,4 @@
+#include "../../CommandLineInterface/CLI.hpp"
 #include "../Text/TextPrint.hpp"
 #include "KBHandlers.hpp"
 
@@ -13,8 +14,6 @@ void StandardKeyboardHandler(uint_8 scanCode, uint_8 chr)
 			PrintChar(chr - 32); // Make uppercase
 		else
 			PrintChar(chr);
-
-		FinalLetterPosition++; // Add one on to where the final letter is
 	}
 	else
 	{
@@ -62,7 +61,8 @@ void KeyboardHandler0xE0(uint_8 scanCode)
 		SetCursorPosition(CursorPosition - VGA_WIDTH);
 		break;
 	case 0x4B: // Left Arrow
-		SetCursorPosition(CursorPosition - 1);
+		if (CursorPosition > CLI::FirstPosition)
+			SetCursorPosition(CursorPosition - 1);
 		break;
 	case 0x4D: // Right Arrow
 		if (CursorPosition < FinalLetterPosition)

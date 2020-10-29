@@ -1,35 +1,37 @@
-GPPPARAMS = -m64 -Ttext 0x8000 -fno-use-cxa-atexit -nostdlib -fno-builtin -fno-rtti -fno-exceptions -fno-leading-underscore
-LDPARAMS = --oformat binary
+GCCPARAMS = -ffreestanding -mno-red-zone -m64 -Ttext 0x8000
+CUSTOMLDPARAMS = --oformat binary
+ASMPARAMS = -f elf64
 
-CPPCompiler = g++ $(GPPPARAMS)### This is the compiler and its parameters
-LINKER = ld $(LDPARAMS)### This is the linker and its parameters
-ASMCompiler = nasm
+GCCCompiler = x86_64-elf-gcc $(GCCPARAMS)### This is the compiler and its parameters
+CUSTOMLD = x86_64-elf-ld $(CUSTOMLDPARAMS)### This is the linker and its parameters
+ASMCompiler = nasm $(ASMPARAMS)
 
 OUTPUTPREFIX = Info: # Message to put before outputs
 
 SRCDIR = src/
 TEMPDIR = .temp/
 OUTDIR = bin/
-KERNELDIR = Kernel_Files/
+KERNELFILEDIR = Kernel_Files/
 
-srcFiles = Heap.cpp IDT.cpp IO.cpp KBHandlers.cpp Kernel.cpp Memory.cpp MemoryMap.cpp TextPrint.cpp# Relative to Kernel_Files
-asmFiles = $(KERNELDIR)Binaries.asm 64BitBoot/ExtendedProgram.asm#Relative to $(SRCDIR)
+cppFiles = Memory/Heap.cpp InputOutput/Interrupts/IDT.cpp InputOutput/IO.cpp InputOutput/Keyboard/KBHandlers.cpp \
+			.Kernel/Kernel.cpp Memory/Memory.cpp Memory/MemoryMap.cpp InputOutput/Text/TextPrint.cpp# Relative to Kernel_Files
+asmFiles = $(KERNELFILEDIR)Misc/IncludeBinaries.asm 64BitBoot/ExtendedProgram.asm#Relative to $(SRCDIR)
 
 # Remove directories, remove extension, add .o, add directory
-objects = $(addprefix $(TEMPDIR),$(addsuffix .o,$(basename $(notdir $(asmFiles))))) $(addprefix $(TEMPDIR),$(addsuffix .o,$(basename $(notdir $(srcFiles)))))
+objects = $(addprefix $(TEMPDIR),$(addsuffix .o,$(basename $(notdir $(asmFiles))))) $(addprefix $(TEMPDIR),$(addsuffix .o,$(basename $(notdir $(cppFiles)))))
 
 
 define compile_kernel # Compile the files
 	@$(ASMCompiler) $(SRCDIR)16BitBoot/Boot.asm -f bin -o $(OUTDIR)Boot.bin
-	@$(ASMCompiler) $(SRCDIR)64BitBoot/ExtendedProgram.asm -f elf64 -o $(TEMPDIR)ExtendedProgram.o
 	
-	@$(ASMCompiler) $(SRCDIR)$(KERNELDIR)Binaries.asm -f elf64 -o $(TEMPDIR)Binaries.o
+
+	@$(foreach file,$(asmFiles),$(ASMCompiler) $(addprefix $(SRCDIR),$(file)) -o $(addprefix $(TEMPDIR),$(addsuffix .o,$(basename $(notdir $(file)))));)
 
 
-	@$(foreach CppFile,$(srcFiles),$(CPPCompiler) -o $(addprefix $(TEMPDIR),$(addsuffix .o,$(basename $(CppFile)))) -c $(addprefix $(SRCDIR)$(KERNELDIR),$(CppFile));)
-
-
-	@$(LINKER) -T $(SRCDIR)$(KERNELDIR)Linker.ld $(objects) -o $(OUTDIR)Kernel.bin
+	@$(foreach file,$(cppFiles),$(GCCCompiler) -o $(addprefix $(TEMPDIR),$(addsuffix .o,$(basename $(notdir $(file))))) -c $(addprefix $(SRCDIR)$(KERNELFILEDIR),$(file));)
+	
+	
+	@$(CUSTOMLD) -T $(SRCDIR)$(KERNELFILEDIR).Kernel/Linker.ld $(objects) -o $(OUTDIR)Kernel.bin
 
 	@cat $(OUTDIR)Boot.bin $(OUTDIR)Kernel.bin > $(OUTDIR)Bootloader.bin
 
@@ -55,16 +57,15 @@ define full_clean # Perform a full clean
 endef
 
 
+
 define partial_clean
 	@[ -f $(OUTDIR)Bootloader.bin ] && \
 		rm -r $(TEMPDIR) && \
 		mkdir $(TEMPDIR) && \
-		cp $(OUTDIR)Bootloader.bin $(TEMPDIR) && \
+		mv $(OUTDIR)Bootloader.bin $(TEMPDIR) && \
 		rm -r $(OUTDIR) && \
 		mkdir $(OUTDIR) && \
-		cp $(TEMPDIR)Bootloader.bin $(OUTDIR) && \
-		rm -r $(TEMPDIR) && \
-		mkdir $(TEMPDIR) && \
+		mv $(TEMPDIR)Bootloader.bin $(OUTDIR) && \
 		echo $(OUTPUTPREFIX)Cleaned without removing Bootloader.bin \
 	|| \
 		($(call single_line_full_clean) && \

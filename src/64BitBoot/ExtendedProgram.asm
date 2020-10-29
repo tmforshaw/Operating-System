@@ -3,8 +3,8 @@ jmp EnterProtectedMode ; Enter 32-bit Protected Mode
 
 %include "src/64BitBoot/GDT.asm"
 %include "src/16BitBoot/Print.asm"
-%include "src/Kernel_Files/DetectMemory.asm"
-; %include "src/16BitBoot/DiscRead.asm"
+%include "src/Kernel_Files/Memory/DetectMemory.asm"
+; %include "src/16BitBoot/DiscRead.asm" ; Include if you need access to sector amount
 
 EnterProtectedMode: ; Enter 32-bit Protected Mode
     
@@ -45,7 +45,7 @@ StartProtectedMode:
 [bits 64]
 [extern _StartKernel]
 
-%include "src/Kernel_Files/IDT.asm"
+%include "src/Kernel_Files/InputOutput/Interrupts/IDT.asm"
 
 Start64Bit:
     mov edi, 0xB8000

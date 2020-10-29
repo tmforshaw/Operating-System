@@ -13,12 +13,24 @@ TEMPDIR = .temp/
 OUTDIR = bin/
 KERNELFILEDIR = Kernel_Files/
 
-cppFiles = Memory/Heap.cpp InputOutput/Interrupts/IDT.cpp InputOutput/IO.cpp InputOutput/Keyboard/KBHandlers.cpp \
-			.Kernel/Kernel.cpp Memory/Memory.cpp Memory/MemoryMap.cpp InputOutput/Text/TextPrint.cpp# Relative to Kernel_Files
-asmFiles = $(KERNELFILEDIR)Misc/IncludeBinaries.asm 64BitBoot/ExtendedProgram.asm#Relative to $(SRCDIR)
+# Cpp files relative to Kernel_Files
+cppFiles =  Memory/Heap.cpp \
+			InputOutput/Interrupts/IDT.cpp \
+			InputOutput/IO.cpp \
+			InputOutput/Keyboard/KBHandlers.cpp \
+			.Kernel/Kernel.cpp \
+			Memory/Memory.cpp \
+			Memory/MemoryMap.cpp \
+			InputOutput/Text/TextPrint.cpp \
+			CommandLineInterface/CLI.cpp
+
+# ASM files relative to $(SRCDIR)
+asmFiles = $(KERNELFILEDIR)Misc/IncludeBinaries.asm \
+64BitBoot/ExtendedProgram.asm
 
 # Remove directories, remove extension, add .o, add directory
-objects = $(addprefix $(TEMPDIR),$(addsuffix .o,$(basename $(notdir $(asmFiles))))) $(addprefix $(TEMPDIR),$(addsuffix .o,$(basename $(notdir $(cppFiles)))))
+objects =   $(addprefix $(TEMPDIR),$(addsuffix .o,$(basename $(notdir $(asmFiles))))) \
+			$(addprefix $(TEMPDIR),$(addsuffix .o,$(basename $(notdir $(cppFiles)))))
 
 
 define compile_kernel # Compile the files

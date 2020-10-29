@@ -1,5 +1,5 @@
 #pragma once
-#include "../.Kernel/Types.h"
+#include "../Types/Types.hpp"
 
 struct MemorySegmentHeader
 {

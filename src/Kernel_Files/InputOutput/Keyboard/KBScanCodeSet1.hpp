@@ -13,4 +13,4 @@ namespace KBSet1
         0, '*', 0, ' '
     };
 	// clang-format on
-} // namespace KBSet1
+} // Namespace KBSet1

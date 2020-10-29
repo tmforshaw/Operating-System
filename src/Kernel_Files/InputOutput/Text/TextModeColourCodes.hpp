@@ -34,4 +34,8 @@
 #define BG_YELLOW 0xE0
 #define BG_WHITE 0xF0
 
-#define DEFAULT_COLOUR (BG_BLUE | FG_WHITE)
+// Defaults
+
+#define DEFAULT_BG BG_BLACK
+#define DEFAULT_FG FG_WHITE
+#define DEFAULT_COLOUR (DEFAULT_BG | DEFAULT_FG)

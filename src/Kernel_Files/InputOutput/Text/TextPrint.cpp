@@ -1,7 +1,9 @@
-#include "../IO.h"
-#include "TextPrint.h"
+#include "../../CommandLineInterface/CLI.hpp"
+#include "../IO.hpp"
+#include "TextPrint.hpp"
 
 uint_16 CursorPosition;
+uint_16 FinalLetterPosition;
 
 void SetCursorPosition(uint_16 position) // Set the position of the cursor
 {
@@ -31,7 +33,10 @@ void ClearScreen(uint_64 ClearColour) // Clear screen to particular colour
 	for (uint_64* i = (uint_64*)VGA_MEMORY; i < (uint_64*)(VGA_MEMORY + 4000); i++)
 		*i = value;
 
-	SetCursorPosition(0); // Reset cursor position
+	SetCursorPosition(0);	 // Reset cursor position
+	FinalLetterPosition = 0; // Reset final letter pos
+
+	CLI::PrintPrefix();
 }
 
 void PrintString(const char* str, uint_8 colour) // Used to print a string to the screen
@@ -53,6 +58,7 @@ void PrintString(const char* str, uint_8 colour) // Used to print a string to th
 			*(VGA_MEMORY + index * 2) = *charPtr;	// Multiplied by 2 because of formatting value
 			*(VGA_MEMORY + index * 2 + 1) = colour; // Set the formatting value
 			index++;
+			FinalLetterPosition++;
 		}
 
 		charPtr++;
@@ -66,7 +72,10 @@ void PrintChar(char chr, uint_8 colour)
 	*(VGA_MEMORY + CursorPosition * 2) = chr;
 	*(VGA_MEMORY + CursorPosition * 2 + 1) = colour;
 	SetCursorPosition(CursorPosition + 1);
+	FinalLetterPosition++;
 }
+
+char GetCharAtPos(uint_16 position) { return *(VGA_MEMORY + CursorPosition); }
 
 char HexToStringOutput[128];
 template<typename T>

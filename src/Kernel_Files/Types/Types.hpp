@@ -1,5 +1,7 @@
 #pragma once
 
+// Define Primitive types
+
 typedef unsigned char uint_8;
 typedef unsigned short uint_16;
 typedef unsigned int uint_32;

@@ -1,5 +1,5 @@
-#include "Heap.h"
-#include "Memory.h"
+#include "Heap.hpp"
+#include "Memory.hpp"
 
 MemorySegmentHeader* FirstFreeMemorySegment;
 

@@ -11,19 +11,19 @@ void PrintMemoryMap(MemoryMapEntry* memoryMap, uint_16 position)
 
 	PrintString("Memory Base: ");
 	PrintString(IntegerToString(memoryMap->BaseAddress));
-	SetCursorPosition(position + 80); // New line
+	SetCursorPosition(position + VGA_WIDTH); // New line
 
 	PrintString("Region Length: ");
 	PrintString(IntegerToString(memoryMap->RegionLength));
-	SetCursorPosition(position + 160); // New line
+	SetCursorPosition(position + VGA_WIDTH * 2); // New line
 
 	PrintString("Memory Type: ");
 	PrintString(IntegerToString(memoryMap->RegionType));
-	SetCursorPosition(position + 240); // New line
+	SetCursorPosition(position + VGA_WIDTH * 3); // New line
 
 	PrintString("Memory Attributes: ");
 	PrintString(HexToString(memoryMap->ExtendedAttributes));
-	SetCursorPosition(position + 400); // New line
+	SetCursorPosition(position + VGA_WIDTH * 5); // New line
 }
 
 bool MemoryRegionsGot = false;

@@ -1,8 +1,8 @@
-#include "../IO.h"
-#include "../Keyboard/KBHandlers.h"
-#include "../Keyboard/KBScanCodeSet1.h"
-#include "../Text/TextPrint.h"
-#include "IDT.h"
+#include "../IO.hpp"
+#include "../Keyboard/KBHandlers.hpp"
+#include "../Keyboard/KBScanCodeSet1.hpp"
+#include "../Text/TextPrint.hpp"
+#include "IDT.hpp"
 
 extern IDT64 _idt[256];
 extern uint_64 isr1;
@@ -35,8 +35,8 @@ extern "C" void isr1_handler() // Handle Interrupt
 	if (scanCode < 0x3A) // Doesn't include a seperate character for when it is released
 		chr = KBSet1::ScanCodeLookupTable[scanCode];
 
-	if (MainKeyboardHandler != nullptr) // Not a nullptr
-		MainKeyboardHandler(scanCode, chr);
+	if (MainKeyboardHandler != nullptr)		// Not a nullptr
+		MainKeyboardHandler(scanCode, chr); // Handle Keyboard Input
 
 	outb(0x20, 0x20);
 	outb(0xA0, 0x20);

@@ -1,11 +1,11 @@
-#include "../InputOutput/Interrupts/IDT.h"
-#include "../InputOutput/Keyboard/KBHandlers.h"
-#include "../InputOutput/Text/TextPrint.h"
-#include "../Memory/Heap.h"
-#include "../Memory/MemoryMap.h"
+#include "../CommandLineInterface/CLI.hpp"
+#include "../InputOutput/Interrupts/IDT.hpp"
+#include "../InputOutput/Keyboard/KBHandlers.hpp"
+#include "../InputOutput/Text/TextPrint.hpp"
+#include "../Memory/Heap.hpp"
+#include "../Memory/MemoryMap.hpp"
 
-extern "C" void
-	_StartKernel()
+extern "C" void _StartKernel()
 {
 	ClearScreen(); // Clear Screen
 	InitialiseIDT();
@@ -13,7 +13,7 @@ extern "C" void
 	InitialiseHeap(0x100000, 0x100000);
 	MemoryMapEntry** UsableMemoryMaps = GetUsableMemoryRegions(); // Find usable memory
 
-	PrintString("Hello World!\n\r");
+	CLI::Initialise(); // Initialise Command Line Interface
 
 	return;
 }

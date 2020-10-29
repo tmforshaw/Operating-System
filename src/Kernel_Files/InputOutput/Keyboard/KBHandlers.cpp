@@ -1,5 +1,5 @@
-#include "../Text/TextPrint.h"
-#include "KBHandlers.h"
+#include "../Text/TextPrint.hpp"
+#include "KBHandlers.hpp"
 
 bool LShiftPressed = false;
 bool RShiftPressed = false;
@@ -9,15 +9,12 @@ void StandardKeyboardHandler(uint_8 scanCode, uint_8 chr)
 {
 	if (chr != 0) // Not a null character
 	{
-		switch (LShiftPressed || RShiftPressed)
-		{
-		case true:
+		if (LShiftPressed || RShiftPressed)
 			PrintChar(chr - 32); // Make uppercase
-			break;
-		case false:
+		else
 			PrintChar(chr);
-			break;
-		}
+
+		FinalLetterPosition++; // Add one on to where the final letter is
 	}
 	else
 	{
@@ -27,6 +24,7 @@ void StandardKeyboardHandler(uint_8 scanCode, uint_8 chr)
 			SetCursorPosition(CursorPosition - 1);
 			PrintChar(' ');
 			SetCursorPosition(CursorPosition - 1);
+			FinalLetterPosition - 2; // Take one off where the final letter is, and another because print char increments it
 			break;
 		case 0x2A: // LShift
 			LShiftPressed = true;
@@ -42,6 +40,7 @@ void StandardKeyboardHandler(uint_8 scanCode, uint_8 chr)
 			break;
 		case 0x9C: // Enter
 			PrintString("\n\r");
+			FinalLetterPosition += VGA_WIDTH;
 			break;
 		default:
 			break;
@@ -56,10 +55,18 @@ void KeyboardHandler0xE0(uint_8 scanCode)
 	switch (scanCode)
 	{
 	case 0x50: // Down Arrow
-		SetCursorPosition(CursorPosition + VGA_WIDTH);
+		if (CursorPosition + VGA_WIDTH < FinalLetterPosition)
+			SetCursorPosition(CursorPosition + VGA_WIDTH);
 		break;
 	case 0x48: // Up Arrow
 		SetCursorPosition(CursorPosition - VGA_WIDTH);
+		break;
+	case 0x4B: // Left Arrow
+		SetCursorPosition(CursorPosition - 1);
+		break;
+	case 0x4D: // Right Arrow
+		if (CursorPosition < FinalLetterPosition)
+			SetCursorPosition(CursorPosition + 1); // Stop being able to go past end of line
 		break;
 	default:
 		break;
@@ -77,5 +84,22 @@ void KeyboardHandler(uint_8 scanCode, uint_8 chr)
 		break;
 	default:
 		StandardKeyboardHandler(scanCode, chr);
+	}
+}
+
+void DebugKeyboardHandler(uint_8 scanCode, uint_8 chr)
+{
+	switch (scanCode)
+	{
+	case 0x1D:
+		PrintString("Char: ");
+		PrintChar(GetCharAtPos(CursorPosition));
+		break;
+	case 0x9D:
+		PrintChar(' ');
+		break;
+	default:
+		PrintChar(' ');
+		PrintString(HexToString(scanCode));
 	}
 }

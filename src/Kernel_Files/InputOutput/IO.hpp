@@ -1,5 +1,5 @@
 #pragma once
-#include "Types.h"
+#include "../Types/Types.hpp"
 
 // Master and Slave PIC Chips
 #define PIC1_COMMAND 0x20

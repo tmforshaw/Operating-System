@@ -4,24 +4,19 @@
 #include "MemoryMap.h"
 #include "TextPrint.h"
 
-void InitKernel()
-{
-	ClearScreen();							// Clear Screen
-	InitialiseIDT();						// Initialise Interupt Descriptor Table
-	MainKeyboardHandler = &KeyboardHandler; // Set KeyboardHandler
-	InitialiseHeap(0x100000, 0x100000);		// Initialise The Heap
-}
-
 extern "C" void _StartKernel()
 {
-	InitKernel();
+	ClearScreen(); // Clear Screen
+	InitialiseIDT();
+	MainKeyboardHandler = &KeyboardHandler; // Set Keyboard Handler
+	InitialiseHeap(0x100000, 0x100000);
+	MemoryMapEntry** UsableMemoryMaps = GetUsableMemoryRegions(); // Find usable memory
 
-	(*MainKeyboardHandler)(0x00, 'P');
-	KeyboardHandler(0x00, 'P');
+	uint_64* TestAddress = (uint_64*)aligned_alloc(0x4000, 0x08);
+	*TestAddress = 12345678;
 
-	// MemoryMapEntry** UsableMemoryMaps = GetUsableMemoryRegions(); // Find usable memory
-
-	PrintString("Hello World");
+	PrintString(HexToString((uint_64)TestAddress));
+	PrintString("\n\r");
 
 	return;
 }

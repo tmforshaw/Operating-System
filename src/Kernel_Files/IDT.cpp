@@ -1,5 +1,6 @@
 #include "IDT.h"
 #include "IO.h"
+#include "KBHandlers.h"
 #include "KBScanCodeSet1.h"
 #include "TextPrint.h"
 
@@ -26,7 +27,7 @@ void InitialiseIDT()
 	LoadIDT();
 }
 
-extern "C" void isr1_handler() // Print Keyboard Output
+extern "C" void isr1_handler() // Handle Interrupt
 {
 	uint_8 scanCode = inb(0x60);
 	uint_8 chr = 0;

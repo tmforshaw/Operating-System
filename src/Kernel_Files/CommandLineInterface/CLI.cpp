@@ -1,6 +1,6 @@
 #include "../InputOutput/Text/TextPrint.hpp"
 #include "../Types/String.hpp"
-#include "CLI.hpp"
+#include "./CLI.hpp"
 
 namespace CLI
 {

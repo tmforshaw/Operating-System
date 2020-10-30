@@ -1,75 +1,68 @@
-#include "String.hpp"
-#include "Types.hpp"
+#include "../InputOutput/Text/TextPrint.hpp"
+#include "../Memory/Heap.hpp"
+#include "./String.hpp"
 
-class Type::String
+// Constructors
+
+Type::String::String() : str_val((char*)calloc(sizeof(char))) {} // Only the null terminator
+
+Type::String::String(const char* str)
 {
-private:
-	char* str_val = ""; // Address of string value
+	*this = str;
+}
 
-public:
-	// Constructors
+Type::String::~String()
+{
+	// free(str_val); // BROKEN AND I DON'T KNOW WHY
+}
 
-	String() {}
+// Assignment Operators
 
-	String(const char* str)
-	{
-		*this = str;
-	}
+void Type::String::operator=(const String other) // Change str_val
+{
+	free(this->str_val);										 // Free memory
+	this->str_val = (char*)calloc(other.Length(), sizeof(char)); // Allocate new memory
 
-	String(const Type::String str)
-	{
-		*this = str;
-	}
+	for (uint_32 i = 0; i < other.Length(); i++)
+		this->str_val[i] = other.CharAt(i);
 
-	~String() {}
+	this->str_val[other.Length()] = 0; // Null-terminate
+}
 
-	// Assignment Operators
+void Type::String::operator=(const char* other) // Change str_val
+{
+	// Calculate length
+	uint_32 length = 0;
+	while (other[length] != 0) length++; // Null-terminated (Don't count null char)
 
-	void operator=(const Type::String& other) // Change str_val
-	{
-		for (uint_32 i = 0; i < other.Length(); i++)
-			*(this->str_val + i) = other.CharAt(i);
+	for (uint_32 i = 0; i < length; i++)
+		this->str_val[i] = other[i];
 
-		*(this->str_val + other.Length()) = 0; // Null-terminate
-	}
+	this->str_val[length] = 0; // Null-terminate
+}
 
-	void operator=(const char*& other) // Change str_val
-	{
-		// Calculate length
-		uint_32 length = 0;
-		while (str_val[length] != 0) length++; // Null-terminated (Don't count null char)
+char& Type::String::operator[](uint_32 index)
+{
+	if (index >= 0 && index < this->Length()) // Within bounds
+		return str_val[index];
+	else
+		// Invalid Index
+		return str_val[0]; // Return first element
+}
 
-		for (uint_32 i = 0; i < length; i++)
-			*(this->str_val + i) = other[i];
+uint_32 Type::String::Length() const
+{
+	uint_32 length = 0;
+	while (this->str_val[length] != 0) length++; // Null-terminated (Don't count null char)
 
-		*(this->str_val + length) = 0; // Null-terminate
-	}
+	return length;
+}
 
-	char& operator[](uint_32 index)
-	{
-		if (index >= 0 && index < this->Length()) // Within bounds
-			return str_val[index];
-		else
-			// Invalid Index
-			return; // Return NULL
-	}
-
-	uint_32 Length() const
-	{
-		uint_32 length = 0;
-		while (str_val[length] != 0) length++; // Null-terminated (Don't count null char)
-
-		return length;
-	}
-
-	char CharAt(uint_32 index) const
-	{
-		if (index >= 0 && index < this->Length()) // Within bounds
-			return str_val[index];
-		else
-			// Invalid Index
-			return; // Return NULL
-	}
-};
-
-Type::String str = "Hello World";
+char Type::String::CharAt(uint_32 index) const
+{
+	if (index >= 0 && index < this->Length()) // Within bounds
+		return this->str_val[index];
+	else
+		// Invalid Index
+		return 0; // Return NULL
+}

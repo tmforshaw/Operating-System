@@ -2,7 +2,7 @@
 #include "../Keyboard/KBHandlers.hpp"
 #include "../Keyboard/KBScanCodeSet1.hpp"
 #include "../Text/TextPrint.hpp"
-#include "IDT.hpp"
+#include "./IDT.hpp"
 
 extern IDT64 _idt[256];
 extern uint_64 isr1;

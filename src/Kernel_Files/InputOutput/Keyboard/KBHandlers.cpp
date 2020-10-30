@@ -1,6 +1,6 @@
 #include "../../CommandLineInterface/CLI.hpp"
 #include "../Text/TextPrint.hpp"
-#include "KBHandlers.hpp"
+#include "./KBHandlers.hpp"
 
 bool LShiftPressed = false;
 bool RShiftPressed = false;

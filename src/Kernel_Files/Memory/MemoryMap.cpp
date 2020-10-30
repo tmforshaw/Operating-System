@@ -1,5 +1,5 @@
 #include "../InputOutput/Text/TextPrint.hpp"
-#include "MemoryMap.hpp"
+#include "./MemoryMap.hpp"
 
 uint_8 UsableMemoryRegionCount;
 

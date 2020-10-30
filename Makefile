@@ -2,7 +2,7 @@ GCCPARAMS = -ffreestanding -mno-red-zone -m64 -Ttext 0x8000
 CUSTOMLDPARAMS = --oformat binary
 ASMPARAMS = -f elf64
 
-GCCCompiler = x86_64-elf-gcc $(GCCPARAMS)### This is the compiler and its parameters
+GCCCompiler = x86_64-elf-g++ $(GCCPARAMS)### This is the compiler and its parameters
 CUSTOMLD = x86_64-elf-ld $(CUSTOMLDPARAMS)### This is the linker and its parameters
 ASMCompiler = nasm $(ASMPARAMS)
 
@@ -22,7 +22,8 @@ cppFiles =  Memory/Heap.cpp \
 			Memory/Memory.cpp \
 			Memory/MemoryMap.cpp \
 			InputOutput/Text/TextPrint.cpp \
-			CommandLineInterface/CLI.cpp
+			CommandLineInterface/CLI.cpp \
+			Types/String.cpp
 
 # ASM files relative to $(SRCDIR)
 asmFiles = $(KERNELFILEDIR)Misc/IncludeBinaries.asm \

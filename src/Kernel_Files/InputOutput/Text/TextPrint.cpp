@@ -1,6 +1,6 @@
 #include "../../CommandLineInterface/CLI.hpp"
 #include "../IO.hpp"
-#include "TextPrint.hpp"
+#include "./TextPrint.hpp"
 
 uint_16 CursorPosition;
 uint_16 FinalLetterPosition;
@@ -62,6 +62,31 @@ void PrintString(const char* str, uint_8 colour) // Used to print a string to th
 		}
 
 		charPtr++;
+	}
+
+	SetCursorPosition(index);
+}
+
+void PrintString(Type::String str, uint_8 colour) // Used to print a string to the screen
+{
+	uint_16 index = CursorPosition;
+
+	for (uint_32 i = 0; i < str.Length(); i++)
+	{
+		switch (str[i])
+		{
+		case '\n':
+			index += VGA_WIDTH;
+			break;
+		case '\r':
+			index -= index % VGA_WIDTH;
+			break;
+		default:
+			*(VGA_MEMORY + index * 2) = str[i];		// Multiplied by 2 because of formatting value
+			*(VGA_MEMORY + index * 2 + 1) = colour; // Set the formatting value
+			index++;
+			FinalLetterPosition++;
+		}
 	}
 
 	SetCursorPosition(index);

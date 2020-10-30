@@ -72,4 +72,4 @@ ActivateSSE:
     ret
 
 
-times 8*512-($-$$) db 0 ; Fill the rest of the sectors with 0
+times 16*512-($-$$) db 0 ; Fill the rest of the sectors with 0

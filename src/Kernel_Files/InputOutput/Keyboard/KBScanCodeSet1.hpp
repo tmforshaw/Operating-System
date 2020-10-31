@@ -9,8 +9,10 @@ namespace KBSet1
         'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']',
         0, 0, 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'',
         '`', 0, 
-        '\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/',
+        '#', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/',
         0, '*', 0, ' '
     };
 	// clang-format on
 } // Namespace KBSet1
+
+// 0x80 < scancode < 0xE0 Is a released key

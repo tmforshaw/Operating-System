@@ -78,7 +78,7 @@ namespace CLI
 
 		PrintPrefix();
 
-		Debug::ShowDebugScreen();
+		Debug::Clear();
 
 		// Reset FinalPositions
 		for (uint_16 i = 0; i < VGA_HEIGHT; i++) // Set FinalPositions

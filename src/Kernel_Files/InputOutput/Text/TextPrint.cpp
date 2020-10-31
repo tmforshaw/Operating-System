@@ -79,15 +79,13 @@ void PrintChar(char chr, uint_8 colour)
 	if (CLI::CursorPosition == CLI::FinalLetterPositions[CLI::CursorLine] + CLI::CursorLine * VGA_WIDTH) // Is the last char on line
 		CLI::FinalLetterPositions[CLI::CursorLine]++;
 
+	uint_16 PrevCursorLine = CLI::CursorLine;
+
 	CLI::SetCursorPosition(CLI::CursorPosition + 1);
 
-	if (CLI::CursorLine < CLI::CursorPosition / VGA_WIDTH) // Check if we are on next line
-	{
-		CLI::CursorLine++;
-
+	if (PrevCursorLine < CLI::CursorLine)			// Check if we are on the next line
 		if (CLI::CursorLine > CLI::FinalCursorLine) // If that was the final line
 			CLI::FinalCursorLine++;
-	}
 }
 
 char GetCharAtPos(uint_16 position) { return *(VGA_MEMORY + CLI::CursorPosition); }

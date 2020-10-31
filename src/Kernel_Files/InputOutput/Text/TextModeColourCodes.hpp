@@ -25,7 +25,7 @@
 #define BG_MAGENTA 0x50
 #define BG_BROWN 0x60
 #define BG_LIGHTGREY 0x70
-#define BG_LIGHTBLACK 0x80
+#define BG_DARKGREY 0x80
 #define BG_LIGHTBLUE 0x90
 #define BG_LIGHTGREEN 0xA0
 #define BG_LIGHTCYAN 0xB0

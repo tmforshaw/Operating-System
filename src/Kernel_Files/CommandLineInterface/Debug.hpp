@@ -11,14 +11,28 @@ public:
 	static uint_8 DebugColour;
 
 	static void Initialise();
-	static void ShowDebugScreen();
+	static void Clear();
 
 	static void Log(const char* value);
 	static void Log(Type::String value);
 
-	static void Log(const char* message, const char* values...);
-	static void Log(Type::String message, Type::String values...);
+	static void LogChar(char value);
 
-	static void Log(Type::String message, const char* values...);
-	static void Log(const char* message, Type::String values...);
+	static void LogInt(uint_8 value);
+	static void LogInt(uint_16 value);
+	static void LogInt(uint_32 value);
+	static void LogInt(uint_64 value);
+	static void LogInt(char value);
+	static void LogInt(short value);
+	static void LogInt(int value);
+	static void LogInt(long long value);
+
+	static void LogHex(uint_8 value);
+	static void LogHex(uint_16 value);
+	static void LogHex(uint_32 value);
+	static void LogHex(uint_64 value);
+	static void LogHex(char value);
+	static void LogHex(short value);
+	static void LogHex(int value);
+	static void LogHex(long long value);
 };

@@ -14,14 +14,12 @@
 extern "C" void _StartKernel()
 {
 	InitialiseIDT();
-	MainKeyboardHandler = &KeyboardHandler; // Set Keyboard Handler
+	MainKeyboardHandler = &DebugKeyboardHandler; // Set Keyboard Handler
 	InitialiseHeap(0x100000, 0x100000);
 	MemoryMapEntry **UsableMemoryMaps = GetUsableMemoryRegions(); // Find usable memory
 
 	CLI::Initialise(); // Initialise Command Line Interface
 	Debug::Initialise();
-
-	Debug::Log("Message: ");
 
 	return;
 }

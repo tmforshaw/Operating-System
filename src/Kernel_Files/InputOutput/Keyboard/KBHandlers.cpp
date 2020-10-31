@@ -1,4 +1,5 @@
 #include "../../CommandLineInterface/CLI.hpp"
+#include "../../CommandLineInterface/Debug.hpp"
 #include "../Text/TextPrint.hpp"
 #include "./KBHandlers.hpp"
 
@@ -10,10 +11,16 @@ void StandardKeyboardHandler(uint_8 scanCode, uint_8 chr)
 {
 	if (chr != 0) // Not a null character
 	{
-		if (LShiftPressed || RShiftPressed)
-			PrintChar(chr - 32); // Make uppercase
-		else
-			PrintChar(chr);
+		if (CLI::CursorPosition < CLI::MaxCursorLine * VGA_WIDTH) // Stop overflow
+		{
+			if (LShiftPressed || RShiftPressed)
+				PrintChar(chr - 32); // Make uppercase
+			else
+				PrintChar(chr);
+		}
+
+		if (CLI::CursorPosition == CLI::MaxCursorLine * VGA_WIDTH) // Reset position
+			CLI::SetCursorPosition(CLI::MaxCursorLine * VGA_WIDTH - 1);
 	}
 	else
 	{
@@ -27,8 +34,8 @@ void StandardKeyboardHandler(uint_8 scanCode, uint_8 chr)
 				CLI::SetCursorPosition(CLI::CursorPosition - 1);
 				CLI::FinalLetterPositions[CLI::CursorLine] -= 2;
 
-				// if ((CLI::CursorPosition + 1) % VGA_WIDTH == 0) // Just left a previous line
-				// 	CLI::FinalCursorLine--;
+				if ((CLI::CursorPosition + 1) / VGA_WIDTH == 0) // Just left a previous line
+					CLI::FinalCursorLine--;
 			}
 			break;
 		case 0x2A: // LShift
@@ -64,13 +71,15 @@ void StandardKeyboardHandler(uint_8 scanCode, uint_8 chr)
 	LastScanCode = scanCode;
 }
 
+int a = 0;
+
 void KeyboardHandler0xE0(uint_8 scanCode)
 {
 	switch (scanCode)
 	{
 	case 0x50: // Down Arrow
 
-		if (CLI::CursorPosition < CLI::FinalLetterPositions[CLI::FinalCursorLine] + CLI::FinalCursorLine * VGA_WIDTH - 1) // Too far down
+		if (CLI::CursorPosition < CLI::FirstLetterPositions[CLI::FinalCursorLine] + CLI::FinalCursorLine * VGA_WIDTH) // Not too far down
 		{
 			if (CLI::CursorPosition + VGA_WIDTH <= CLI::FinalLetterPositions[CLI::CursorLine + 1] + (CLI::CursorLine + 1) * VGA_WIDTH)
 				CLI::SetCursorPosition(CLI::CursorPosition + VGA_WIDTH);
@@ -79,7 +88,7 @@ void KeyboardHandler0xE0(uint_8 scanCode)
 		}
 		else
 		{
-			CLI::SetCursorPosition(CLI::FinalLetterPositions[CLI::FinalCursorLine]);
+			CLI::SetCursorPosition(CLI::FinalLetterPositions[CLI::FinalCursorLine] + CLI::FinalCursorLine * VGA_WIDTH);
 		}
 
 		break;
@@ -162,6 +171,6 @@ void DebugKeyboardHandler(uint_8 scanCode, uint_8 chr)
 		break;
 	default:
 		PrintChar(' ');
-		PrintString(HexToString(scanCode));
+		PrintString(IntegerToString(scanCode));
 	}
 }

@@ -47,7 +47,16 @@ char& Type::String::operator[](uint_16 index)
 		return str_val[index];
 	else
 		// Invalid Index
-		return str_val[0]; // Return first element
+		return str_val[this->Length()]; // Return the null element
+}
+
+char Type::String::operator[](uint_16 index) const
+{
+	if (index >= 0 && index < this->Length()) // Within bounds
+		return str_val[index];
+	else
+		// Invalid Index
+		return str_val[this->Length()]; // Return the null element
 }
 
 uint_16 Type::String::Length() const
@@ -65,4 +74,78 @@ char Type::String::CharAt(uint_16 index) const
 	else
 		// Invalid Index
 		return 0; // Return NULL
+}
+
+const char* Type::String::GetStringVal() const
+{
+	return this->str_val;
+}
+
+void Type::String::ToLower()
+{
+	for (uint_16 i = 0; i < this->Length(); i++)
+	{
+		if ((*this)[i] >= 'A' && (*this)[i] <= 'Z') // Is Uppercase
+			(*this)[i] -= 'A';						// Make Lowercase
+	}
+}
+
+void Type::String::ToUpper()
+{
+	for (uint_16 i = 0; i < this->Length(); i++)
+	{
+		if ((*this)[i] >= 'a' && (*this)[i] <= 'z') // Is Uppercase
+			(*this)[i] += 'A';						// Make Lowercase
+	}
+}
+
+Type::String Type::String::ToLower(Type::String str)
+{
+	Type::String copyStr = str;
+	copyStr.ToLower();
+
+	return copyStr;
+}
+
+const char* Type::String::ToLower(const char* str)
+{
+	Type::String copyStr = str;
+	copyStr.ToLower();
+
+	return copyStr.GetStringVal();
+}
+
+Type::String Type::String::ToUpper(Type::String str)
+{
+	Type::String copyStr = str;
+	copyStr.ToUpper();
+
+	return copyStr;
+}
+
+const char* Type::String::ToUpper(const char* str)
+{
+	Type::String copyStr = str;
+	copyStr.ToUpper();
+
+	return copyStr.GetStringVal();
+}
+
+// Operators
+
+bool Type::String::operator==(const String& other) const
+{
+	if (this->Length() != other.Length())
+		return false;
+
+	for (uint_16 i = 0; i < this->Length(); i++)
+		if ((*this)[i] != other[i])
+			return false;
+
+	return true;
+}
+
+bool Type::String::operator!=(const String& other) const
+{
+	return !(*this == other);
 }

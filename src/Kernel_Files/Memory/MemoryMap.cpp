@@ -7,23 +7,23 @@ MemoryMapEntry* UsableMemoryRegions[10];
 
 void PrintMemoryMap(MemoryMapEntry* memoryMap, uint_16 position)
 {
-	SetCursorPosition(position);
+	CLI::SetCursorPosition(position);
 
 	PrintString("Memory Base: ");
 	PrintString(IntegerToString(memoryMap->BaseAddress));
-	SetCursorPosition(position + VGA_WIDTH); // New line
+	CLI::SetCursorPosition(position + VGA_WIDTH); // New line
 
 	PrintString("Region Length: ");
 	PrintString(IntegerToString(memoryMap->RegionLength));
-	SetCursorPosition(position + VGA_WIDTH * 2); // New line
+	CLI::SetCursorPosition(position + VGA_WIDTH * 2); // New line
 
 	PrintString("Memory Type: ");
 	PrintString(IntegerToString(memoryMap->RegionType));
-	SetCursorPosition(position + VGA_WIDTH * 3); // New line
+	CLI::SetCursorPosition(position + VGA_WIDTH * 3); // New line
 
 	PrintString("Memory Attributes: ");
 	PrintString(HexToString(memoryMap->ExtendedAttributes));
-	SetCursorPosition(position + VGA_WIDTH * 5); // New line
+	CLI::SetCursorPosition(position + VGA_WIDTH * 5); // New line
 }
 
 bool MemoryRegionsGot = false;

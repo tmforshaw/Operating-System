@@ -1,8 +1,9 @@
-GCCPARAMS = -ffreestanding -mno-red-zone -m64 -Ttext 0x8000
+# GCCPARAMS = -ffreestanding -mno-red-zone -m64 -Ttext 0x8000
+GPPPARAMS = -m64 -fno-use-cxa-atexit -nostdlib -fno-builtin -fno-rtti -fno-exceptions -fno-leading-underscore -Ttext 0x8000
 CUSTOMLDPARAMS = --oformat binary
 ASMPARAMS = -f elf64
 
-GCCCompiler = x86_64-elf-g++ $(GCCPARAMS)### This is the compiler and its parameters
+GCCCompiler = x86_64-elf-g++ $(GPPPARAMS)### This is the compiler and its parameters
 CUSTOMLD = x86_64-elf-ld $(CUSTOMLDPARAMS)### This is the linker and its parameters
 ASMCompiler = nasm $(ASMPARAMS)
 
@@ -14,7 +15,8 @@ OUTDIR = bin/
 KERNELFILEDIR = Kernel_Files/
 
 # Cpp files relative to Kernel_Files
-cppFiles =  Memory/Heap.cpp \
+cppFiles =  CommandLineInterface/CLI.cpp \
+			Memory/Heap.cpp \
 			InputOutput/Interrupts/IDT.cpp \
 			InputOutput/IO.cpp \
 			InputOutput/Keyboard/KBHandlers.cpp \
@@ -22,7 +24,6 @@ cppFiles =  Memory/Heap.cpp \
 			Memory/Memory.cpp \
 			Memory/MemoryMap.cpp \
 			InputOutput/Text/TextPrint.cpp \
-			CommandLineInterface/CLI.cpp \
 			Types/String.cpp
 
 # ASM files relative to $(SRCDIR)

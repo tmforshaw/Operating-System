@@ -6,9 +6,9 @@ namespace Type
 	class String
 	{
 	private:
-	public:
 		char* str_val; // Address of string value
 
+	public:
 		// Constructors
 
 		String();

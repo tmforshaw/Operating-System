@@ -1,48 +1,15 @@
-#include "../../CommandLineInterface/CLI.hpp"
 #include "../IO.hpp"
 #include "./TextPrint.hpp"
-
-uint_16 CursorPosition;
-uint_16 FinalLetterPosition;
-
-void SetCursorPosition(uint_16 position) // Set the position of the cursor
-{
-	// Send Commands Across IO Bus
-	outb(0x3D4, 0x0F);
-	outb(0x3D5, (uint_8)(position & 0xFF));
-	outb(0x3D4, 0x0E);
-	outb(0x3D5, (uint_8)((position >> 8) & 0xFF));
-
-	CursorPosition = position;
-}
 
 uint_16 PositionFromCoords(uint_8 x, uint_8 y) // Turn an X and Y value into the index of the position on screen
 {
 	return y * VGA_WIDTH + x;
 }
 
-void ClearScreen(uint_64 ClearColour) // Clear screen to particular colour
-{
-	// Set 4 Places at a time
-	uint_64 value = 0;
-	value += ClearColour << 8;
-	value += ClearColour << 24;
-	value += ClearColour << 40;
-	value += ClearColour << 56;
-
-	for (uint_64* i = (uint_64*)VGA_MEMORY; i < (uint_64*)(VGA_MEMORY + 4000); i++)
-		*i = value;
-
-	SetCursorPosition(0);	 // Reset cursor position
-	FinalLetterPosition = 0; // Reset final letter pos
-
-	CLI::PrintPrefix();
-}
-
 void PrintString(const char* str, uint_8 colour) // Used to print a string to the screen
 {
 	uint_8* charPtr = (uint_8*)str;
-	uint_16 index = CursorPosition;
+	uint_16 index = CLI::CursorPosition;
 
 	while (*charPtr != 0) // Null terminated string
 	{
@@ -58,21 +25,27 @@ void PrintString(const char* str, uint_8 colour) // Used to print a string to th
 			*(VGA_MEMORY + index * 2) = *charPtr;	// Multiplied by 2 because of formatting value
 			*(VGA_MEMORY + index * 2 + 1) = colour; // Set the formatting value
 			index++;
-			FinalLetterPosition++;
+			CLI::FinalLetterPositions[CLI::CursorLine]++;
 		}
 
 		charPtr++;
 	}
 
-	SetCursorPosition(index);
+	CLI::SetCursorPosition(index);
 }
 
 void PrintString(Type::String str, uint_8 colour) // Used to print a string to the screen
 {
-	uint_16 index = CursorPosition;
+	uint_16 index = CLI::CursorPosition;
 
 	for (uint_32 i = 0; i < str.Length(); i++)
 	{
+		// // Handle overflow
+		// if (index < CLI::FirstLetterPositions[index / VGA_WIDTH] + (index / VGA_WIDTH) * VGA_WIDTH)
+		// 	index = CLI::FirstLetterPositions[index / VGA_WIDTH] + (index / VGA_WIDTH) * VGA_WIDTH;
+		// else if (index > CLI::FinalLetterPositions[index / VGA_WIDTH] + (index / VGA_WIDTH) * VGA_WIDTH)
+		// 	index = CLI::FinalLetterPositions[index / VGA_WIDTH] + (index / VGA_WIDTH) * VGA_WIDTH;
+
 		switch (str[i])
 		{
 		case '\n':
@@ -85,22 +58,22 @@ void PrintString(Type::String str, uint_8 colour) // Used to print a string to t
 			*(VGA_MEMORY + index * 2) = str[i];		// Multiplied by 2 because of formatting value
 			*(VGA_MEMORY + index * 2 + 1) = colour; // Set the formatting value
 			index++;
-			FinalLetterPosition++;
+			CLI::FinalLetterPositions[CLI::CursorLine]++;
 		}
 	}
 
-	SetCursorPosition(index);
+	CLI::SetCursorPosition(index);
 }
 
 void PrintChar(char chr, uint_8 colour)
 {
-	*(VGA_MEMORY + CursorPosition * 2) = chr;
-	*(VGA_MEMORY + CursorPosition * 2 + 1) = colour;
-	SetCursorPosition(CursorPosition + 1);
-	FinalLetterPosition++;
+	*(VGA_MEMORY + CLI::CursorPosition * 2) = chr;
+	*(VGA_MEMORY + CLI::CursorPosition * 2 + 1) = colour;
+	CLI::SetCursorPosition(CLI::CursorPosition + 1);
+	CLI::FinalLetterPositions[CLI::CursorLine]++;
 }
 
-char GetCharAtPos(uint_16 position) { return *(VGA_MEMORY + CursorPosition); }
+char GetCharAtPos(uint_16 position) { return *(VGA_MEMORY + CLI::CursorPosition); }
 
 char HexToStringOutput[128];
 template<typename T>

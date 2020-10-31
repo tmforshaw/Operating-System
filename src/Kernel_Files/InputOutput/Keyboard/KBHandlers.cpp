@@ -20,10 +20,13 @@ void StandardKeyboardHandler(uint_8 scanCode, uint_8 chr)
 		switch (scanCode)
 		{
 		case 0x8E: // Backspace
-			SetCursorPosition(CursorPosition - 1);
-			PrintChar(' ');
-			SetCursorPosition(CursorPosition - 1);
-			FinalLetterPosition - 2; // Take one off where the final letter is, and another because print char increments it
+			if (CLI::CursorPosition > CLI::FirstLetterPositions[CLI::CursorLine])
+			{
+				CLI::MoveCursorPosition(CLI::CursorPosition - 1);
+				PrintChar(' ');
+				CLI::MoveCursorPosition(CLI::CursorPosition - 1);
+				CLI::FinalLetterPositions[CLI::CursorLine] - 2; // Take one off where the final letter is, and another because print char increments it
+			}
 			break;
 		case 0x2A: // LShift
 			LShiftPressed = true;
@@ -39,7 +42,6 @@ void StandardKeyboardHandler(uint_8 scanCode, uint_8 chr)
 			break;
 		case 0x9C: // Enter
 			PrintString("\n\r");
-			FinalLetterPosition += VGA_WIDTH;
 			break;
 		default:
 			break;
@@ -54,19 +56,16 @@ void KeyboardHandler0xE0(uint_8 scanCode)
 	switch (scanCode)
 	{
 	case 0x50: // Down Arrow
-		if (CursorPosition + VGA_WIDTH < FinalLetterPosition)
-			SetCursorPosition(CursorPosition + VGA_WIDTH);
+		CLI::MoveCursorPosition(CLI::CursorPosition + VGA_WIDTH);
 		break;
 	case 0x48: // Up Arrow
-		SetCursorPosition(CursorPosition - VGA_WIDTH);
+		CLI::MoveCursorPosition(CLI::CursorPosition - VGA_WIDTH);
 		break;
 	case 0x4B: // Left Arrow
-		if (CursorPosition > CLI::FirstPosition)
-			SetCursorPosition(CursorPosition - 1);
+		CLI::MoveCursorPosition(CLI::CursorPosition - 1);
 		break;
-	case 0x4D: // Right Arrow
-		if (CursorPosition < FinalLetterPosition)
-			SetCursorPosition(CursorPosition + 1); // Stop being able to go past end of line
+	case 0x4D:											  // Right Arrow
+		CLI::MoveCursorPosition(CLI::CursorPosition + 1); // Stop being able to go past end of line
 		break;
 	default:
 		break;
@@ -93,7 +92,7 @@ void DebugKeyboardHandler(uint_8 scanCode, uint_8 chr)
 	{
 	case 0x1D:
 		PrintString("Char: ");
-		PrintChar(GetCharAtPos(CursorPosition));
+		PrintChar(GetCharAtPos(CLI::CursorPosition));
 		break;
 	case 0x9D:
 		PrintChar(' ');

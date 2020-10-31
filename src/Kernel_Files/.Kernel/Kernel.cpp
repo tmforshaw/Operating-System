@@ -7,22 +7,18 @@
 #include "../Types/String.hpp"
 #include "../Types/Types.hpp"
 
-void *_Unwind_Resume = nullptr;
-void *__gxx_personality_v0 = nullptr;
+// void *_Unwind_Resume = nullptr;
+// void *__gxx_personality_v0 = nullptr;
 
 extern "C" void _StartKernel()
 {
-	ClearScreen(); // Clear Screen
+	CLI::ClearScreen(); // Clear Screen
 	InitialiseIDT();
 	MainKeyboardHandler = &KeyboardHandler; // Set Keyboard Handler
 	InitialiseHeap(0x100000, 0x100000);
 	MemoryMapEntry **UsableMemoryMaps = GetUsableMemoryRegions(); // Find usable memory
 
 	CLI::Initialise(); // Initialise Command Line Interface
-
-	Type::String test("Hello World");
-
-	PrintString(test);
 
 	return;
 }

@@ -1,4 +1,5 @@
 #include "../CommandLineInterface/CLI.hpp"
+#include "../CommandLineInterface/Debug.hpp"
 #include "../InputOutput/Interrupts/IDT.hpp"
 #include "../InputOutput/Keyboard/KBHandlers.hpp"
 #include "../InputOutput/Text/TextPrint.hpp"
@@ -12,13 +13,17 @@
 
 extern "C" void _StartKernel()
 {
-	CLI::ClearScreen(); // Clear Screen
 	InitialiseIDT();
 	MainKeyboardHandler = &KeyboardHandler; // Set Keyboard Handler
 	InitialiseHeap(0x100000, 0x100000);
 	MemoryMapEntry **UsableMemoryMaps = GetUsableMemoryRegions(); // Find usable memory
 
 	CLI::Initialise(); // Initialise Command Line Interface
+	Debug::Initialise();
+
+	Debug::Log("Message: ");
 
 	return;
 }
+
+// WHEN YOU OVERTYPE A LINE THE MOVEMENT BREAKS

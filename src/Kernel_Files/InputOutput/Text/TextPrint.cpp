@@ -38,14 +38,9 @@ void PrintString(Type::String str, uint_8 colour) // Used to print a string to t
 {
 	uint_16 index = CLI::CursorPosition;
 
-	for (uint_32 i = 0; i < str.Length(); i++)
+	for (uint_16 i = 0; i < str.Length(); i++)
 	{
-		// // Handle overflow
-		// if (index < CLI::FirstLetterPositions[index / VGA_WIDTH] + (index / VGA_WIDTH) * VGA_WIDTH)
-		// 	index = CLI::FirstLetterPositions[index / VGA_WIDTH] + (index / VGA_WIDTH) * VGA_WIDTH;
-		// else if (index > CLI::FinalLetterPositions[index / VGA_WIDTH] + (index / VGA_WIDTH) * VGA_WIDTH)
-		// 	index = CLI::FinalLetterPositions[index / VGA_WIDTH] + (index / VGA_WIDTH) * VGA_WIDTH;
-
+		// Handle overflow
 		switch (str[i])
 		{
 		case '\n':
@@ -58,7 +53,17 @@ void PrintString(Type::String str, uint_8 colour) // Used to print a string to t
 			*(VGA_MEMORY + index * 2) = str[i];		// Multiplied by 2 because of formatting value
 			*(VGA_MEMORY + index * 2 + 1) = colour; // Set the formatting value
 			index++;
-			CLI::FinalLetterPositions[CLI::CursorLine]++;
+
+			if (index == CLI::FinalLetterPositions[CLI::CursorLine] + CLI::CursorLine * VGA_WIDTH) // Is the last char on line
+				CLI::FinalLetterPositions[CLI::CursorLine]++;
+
+			if (CLI::CursorLine < CLI::CursorPosition / VGA_WIDTH) // Check if we are on next line
+			{
+				CLI::CursorLine++;
+
+				// if (CLI::CursorLine > CLI::FinalCursorLine) // If that was the final line
+				// 	CLI::FinalCursorLine++;
+			}
 		}
 	}
 
@@ -67,10 +72,22 @@ void PrintString(Type::String str, uint_8 colour) // Used to print a string to t
 
 void PrintChar(char chr, uint_8 colour)
 {
+	// Set the Video Memory of char and colour
 	*(VGA_MEMORY + CLI::CursorPosition * 2) = chr;
 	*(VGA_MEMORY + CLI::CursorPosition * 2 + 1) = colour;
+
+	if (CLI::CursorPosition == CLI::FinalLetterPositions[CLI::CursorLine] + CLI::CursorLine * VGA_WIDTH) // Is the last char on line
+		CLI::FinalLetterPositions[CLI::CursorLine]++;
+
 	CLI::SetCursorPosition(CLI::CursorPosition + 1);
-	CLI::FinalLetterPositions[CLI::CursorLine]++;
+
+	if (CLI::CursorLine < CLI::CursorPosition / VGA_WIDTH) // Check if we are on next line
+	{
+		CLI::CursorLine++;
+
+		if (CLI::CursorLine > CLI::FinalCursorLine) // If that was the final line
+			CLI::FinalCursorLine++;
+	}
 }
 
 char GetCharAtPos(uint_16 position) { return *(VGA_MEMORY + CLI::CursorPosition); }

@@ -22,10 +22,13 @@ void StandardKeyboardHandler(uint_8 scanCode, uint_8 chr)
 		case 0x8E: // Backspace
 			if (CLI::CursorPosition > CLI::FirstLetterPositions[CLI::CursorLine])
 			{
-				CLI::MoveCursorPosition(CLI::CursorPosition - 1);
+				CLI::SetCursorPosition(CLI::CursorPosition - 1);
 				PrintChar(' ');
-				CLI::MoveCursorPosition(CLI::CursorPosition - 1);
-				CLI::FinalLetterPositions[CLI::CursorLine] - 2; // Take one off where the final letter is, and another because print char increments it
+				CLI::SetCursorPosition(CLI::CursorPosition - 1);
+				CLI::FinalLetterPositions[CLI::CursorLine] -= 2;
+
+				// if ((CLI::CursorPosition + 1) % VGA_WIDTH == 0) // Just left a previous line
+				// 	CLI::FinalCursorLine--;
 			}
 			break;
 		case 0x2A: // LShift
@@ -41,7 +44,17 @@ void StandardKeyboardHandler(uint_8 scanCode, uint_8 chr)
 			RShiftPressed = false;
 			break;
 		case 0x9C: // Enter
-			PrintString("\n\r");
+
+			if (CLI::CursorLine < CLI::MaxCursorLine) // Stop overflow
+			{
+				CLI::FinalCursorLine++;
+
+				// Same code as Down Arrow
+				if (CLI::CursorPosition + VGA_WIDTH <= CLI::FinalLetterPositions[CLI::CursorLine + 1] + (CLI::CursorLine + 1) * VGA_WIDTH)
+					CLI::SetCursorPosition(CLI::CursorPosition + VGA_WIDTH);
+				else
+					CLI::SetCursorPosition(CLI::FinalLetterPositions[CLI::CursorLine + 1] + (CLI::CursorLine + 1) * VGA_WIDTH);
+			}
 			break;
 		default:
 			break;
@@ -56,16 +69,66 @@ void KeyboardHandler0xE0(uint_8 scanCode)
 	switch (scanCode)
 	{
 	case 0x50: // Down Arrow
-		CLI::MoveCursorPosition(CLI::CursorPosition + VGA_WIDTH);
+
+		if (CLI::CursorPosition < CLI::FinalLetterPositions[CLI::FinalCursorLine] + CLI::FinalCursorLine * VGA_WIDTH - 1) // Too far down
+		{
+			if (CLI::CursorPosition + VGA_WIDTH <= CLI::FinalLetterPositions[CLI::CursorLine + 1] + (CLI::CursorLine + 1) * VGA_WIDTH)
+				CLI::SetCursorPosition(CLI::CursorPosition + VGA_WIDTH);
+			else
+				CLI::SetCursorPosition(CLI::FinalLetterPositions[CLI::CursorLine + 1] + (CLI::CursorLine + 1) * VGA_WIDTH);
+		}
+		else
+		{
+			CLI::SetCursorPosition(CLI::FinalLetterPositions[CLI::FinalCursorLine]);
+		}
+
 		break;
 	case 0x48: // Up Arrow
-		CLI::MoveCursorPosition(CLI::CursorPosition - VGA_WIDTH);
+
+		// Gets rid of overflow
+		if (CLI::CursorPosition > VGA_WIDTH)
+		{
+			if (CLI::CursorPosition - VGA_WIDTH > CLI::FinalLetterPositions[CLI::CursorLine - 1] + (CLI::CursorLine - 1) * VGA_WIDTH) // Next line doesn't have enough letters
+				CLI::SetCursorPosition(CLI::FinalLetterPositions[CLI::CursorLine - 1] + (CLI::CursorLine - 1) * VGA_WIDTH);
+			else
+				CLI::SetCursorPosition(CLI::CursorPosition - VGA_WIDTH);
+		}
+		else
+		{
+			CLI::SetCursorPosition(CLI::FirstLetterPositions[0]);
+		}
+
 		break;
 	case 0x4B: // Left Arrow
-		CLI::MoveCursorPosition(CLI::CursorPosition - 1);
+
+		// Gets rid of overflow
+		if (CLI::CursorPosition >= CLI::FirstLetterPositions[CLI::CursorLine] + 1)
+		{
+			if (CLI::CursorPosition - 1 < CLI::FirstLetterPositions[CLI::CursorLine] + CLI::CursorLine * VGA_WIDTH)			// Went too far left
+				CLI::SetCursorPosition(CLI::FinalLetterPositions[CLI::CursorLine - 1] + (CLI::CursorLine - 1) * VGA_WIDTH); // Loop it back to last letter of last light
+			else
+				CLI::SetCursorPosition(CLI::CursorPosition - 1); // Loop it back to last letter of last light
+		}
+		else
+		{
+			CLI::SetCursorPosition(CLI::FirstLetterPositions[CLI::CursorLine]);
+		}
+
 		break;
-	case 0x4D:											  // Right Arrow
-		CLI::MoveCursorPosition(CLI::CursorPosition + 1); // Stop being able to go past end of line
+	case 0x4D: // Right Arrow
+
+		if (CLI::CursorPosition >= CLI::FinalLetterPositions[CLI::CursorLine] + CLI::CursorLine * VGA_WIDTH) // Went too far right
+		{
+			if (CLI::CursorLine < CLI::FinalCursorLine) // Is less than last cursor line
+				CLI::SetCursorPosition(CLI::FirstLetterPositions[CLI::CursorLine + 1] + (CLI::CursorLine + 1) * VGA_WIDTH);
+			else
+				CLI::SetCursorPosition(CLI::FinalLetterPositions[CLI::CursorLine] + CLI::CursorLine * VGA_WIDTH);
+		}
+		else
+		{
+			CLI::SetCursorPosition(CLI::CursorPosition + 1);
+		}
+
 		break;
 	default:
 		break;

@@ -1,5 +1,5 @@
 # GCCPARAMS = -ffreestanding -mno-red-zone -m64 -Ttext 0x8000
-GPPPARAMS = -m64 -fno-use-cxa-atexit -nostdlib -fno-builtin -fno-rtti -fno-exceptions -fno-leading-underscore -Ttext 0x8000
+GPPPARAMS = -m64 -fno-use-cxa-atexit -nostdlib -fno-builtin -fno-rtti -fno-exceptions -fno-leading-underscore -Ttext 0x8000 -std=c++2a
 CUSTOMLDPARAMS = --oformat binary
 ASMPARAMS = -f elf64
 
@@ -16,6 +16,7 @@ KERNELFILEDIR = Kernel_Files/
 
 # Cpp files relative to Kernel_Files
 cppFiles =  CommandLineInterface/CLI.cpp \
+			CommandLineInterface/Debug.cpp \
 			Memory/Heap.cpp \
 			InputOutput/Interrupts/IDT.cpp \
 			InputOutput/IO.cpp \

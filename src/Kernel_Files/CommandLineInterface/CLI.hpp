@@ -10,12 +10,16 @@ namespace CLI
 	extern uint_16 CursorLine;
 	extern uint_16 FirstLetterPositions[];
 	extern uint_16 FinalLetterPositions[];
+	extern uint_16 FinalCursorLine;
 
-	void PrintPrefix();
+	extern uint_16 MaxCursorLine;
+
+	void PrintPrefix(uint_16 position = 0);
 	void Initialise();
 
 	void SetCursorPosition(uint_16 position);				// Set the position of the cursor
-	void MoveCursorPosition(uint_16 position);				// Moves the cursor and accounts for overflow
+	void ShiftLine(uint_16 position, uint_16 shiftAmt = 1); // Shifts the line over and replaces the character at the index
+
 	void ClearScreen(uint_64 ClearColour = DEFAULT_COLOUR); // Clear screen to particular colour
 
 } // namespace CLI

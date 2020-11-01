@@ -55,11 +55,11 @@ namespace CLI
 
 		shiftAmt *= (sign ? -1 : +1); // Absolute value of shiftAmt
 
-		uint_16 temp = (position >= 1) ?
+		uint_16 temp = (position >= 0) ?
 						   *((uint_16*)VGA_MEMORY + position) :
 						   (DEFAULT_COLOUR << 8) + ' ';
 
-		uint_16* buffer = (position >= 1) ?
+		uint_16* buffer = (position >= 0 && position < CLI::MaxCursorLine * VGA_WIDTH) ?
 							  ((uint_16*)VGA_MEMORY + (sign ? (position / VGA_WIDTH + 1) * VGA_WIDTH - 1 : position)) :
 							  &temp;
 

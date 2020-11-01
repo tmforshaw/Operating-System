@@ -29,25 +29,24 @@ void StandardKeyboardHandler(uint_8 scanCode, uint_8 chr)
 		case 0x8E: // Backspace
 			if (CLI::CursorPosition > CLI::FirstLetterPositions[CLI::CursorLine])
 			{
-				bool wasOnFinalLetter = CLI::CursorPosition >= CLI::FinalLetterPositions[CLI::CursorLine];
-				if (wasOnFinalLetter) // Allows you to delete the char before when on the final character of a line (the space)
-					CLI::SetCursorPosition(CLI::CursorPosition - 1);
+				bool wasOnNullFinalChar = (CLI::CursorPosition == CLI::FinalLetterPositions[CLI::CursorLine] + CLI::CursorLine * VGA_WIDTH);
 
-				CLI::ShiftLine(CLI::CursorPosition, -1); // Remove character
-				CLI::FinalLetterPositions[CLI::CursorLine]--;
-				CLI::SetCursorPosition(CLI::CursorPosition - 1); // Set new position
+				// Allows you to delete the char before CursorPosition when on the final character of a line (the space)
+				CLI::ShiftLine(CLI::CursorPosition - wasOnNullFinalChar, -1); // Remove character
+				if (CLI::FinalLetterPositions[CLI::CursorLine] > CLI::FirstLetterPositions[CLI::CursorLine])
+					CLI::FinalLetterPositions[CLI::CursorLine]--;
+				else
+					CLI::FinalLetterPositions[CLI::CursorLine] = CLI::FirstLetterPositions[CLI::CursorLine];
 
-				if ((CLI::CursorPosition + 1) % VGA_WIDTH == 0) // Just left a previous line
+				if (CLI::CursorPosition % VGA_WIDTH == 0) // Just left a previous line
 				{
-					Debug::Log("Left line");
+					CLI::SetCursorPosition(CLI::FinalLetterPositions[CLI::CursorLine - 1] + (CLI::CursorLine - 1) * VGA_WIDTH);
 
-					CLI::SetCursorPosition(CLI::FinalLetterPositions[CLI::CursorLine]);
-
-					if (CLI::FinalLetterPositions[CLI::CursorLine + 1] <= CLI::FirstLetterPositions[CLI::CursorLine + 1]) // The line is now empty
+					if (CLI::FinalLetterPositions[CLI::CursorLine + 1] == CLI::FirstLetterPositions[CLI::CursorLine + 1])
 						CLI::FinalCursorLine--;
 				}
-				else if (wasOnFinalLetter) // Didn't leave a line and was the final letter
-					CLI::SetCursorPosition(CLI::CursorPosition + 1);
+				else
+					CLI::SetCursorPosition(CLI::CursorPosition - 1); // Set new position
 			}
 			break;
 		case 0x2A: // LShift

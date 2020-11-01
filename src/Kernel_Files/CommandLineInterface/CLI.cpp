@@ -12,16 +12,10 @@ namespace CLI
 	uint_16 CursorLine = 0;
 	uint_16 FirstLetterPositions[VGA_HEIGHT];
 	uint_16 FinalLetterPositions[VGA_HEIGHT];
+	uint_16 CurrentTypingLine = 0;
 	uint_16 FinalCursorLine = 0;
 
 	uint_16 MaxCursorLine = VGA_HEIGHT - Debug::DebugSize;
-
-	// clang-format off
-	const char* commands[] = {
-		"echo"
-    };
-
-	// clang-format on
 
 	void PrintPrefix(uint_16 position)
 	{
@@ -30,6 +24,8 @@ namespace CLI
 		PrintString(outPrefix);
 
 		FirstLetterPositions[CursorLine] += outPrefix.Length();
+
+		CurrentTypingLine = CursorLine;
 	}
 
 	void Initialise()
@@ -77,11 +73,6 @@ namespace CLI
 				*buffer = temp;
 			}
 
-			// ((sign) ?
-			// 	 *((uint_16*)VGA_MEMORY + position) :
-			// 	 *buffer)
-			// 	= (DEFAULT_COLOUR << 8) + ' '; // Set value to space
-
 			*buffer = (DEFAULT_COLOUR << 8) + ' '; // Set value to space)
 		}
 	}
@@ -115,8 +106,17 @@ namespace CLI
 			FinalLetterPositions[i] = FirstLetterPositions[i];
 	}
 
-	void ParseCommands(uint_8 line, uint_16 position)
+	void ParseCommand(uint_16 position)
 	{
+		Type::String line;
+
+		for (uint_16* i = (uint_16*)(VGA_MEMORY + FirstLetterPositions[position / VGA_WIDTH] + (position / VGA_WIDTH) * VGA_WIDTH);
+			 i < (uint_16*)(VGA_MEMORY + ((position / VGA_WIDTH + 1) * VGA_WIDTH));
+			 i++)
+
+			// line += (char)(*i & 0xF); // Lower byte of the char
+
+			Debug::Log(line);
 	}
 
 } // Namespace CLI

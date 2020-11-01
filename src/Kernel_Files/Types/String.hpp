@@ -42,6 +42,14 @@ namespace Type
 
 		bool operator==(const String& other) const;
 		bool operator!=(const String& other) const;
+
+		// Concatenation Operators
+		void operator+=(const String& other);
+		void operator+=(const char*& other);
+		void operator+=(const char& chr);
+		String operator+(const String& other) const;
+		String operator+(const char*& other) const;
+		String operator+(const char& chr) const;
 	};
 
 } // Namespace Type

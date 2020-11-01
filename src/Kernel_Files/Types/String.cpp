@@ -18,7 +18,7 @@ Type::String::~String()
 
 // Assignment Operators
 
-void Type::String::operator=(const String other) // Change str_val
+void Type::String::operator=(const Type::String other) // Change str_val
 {
 	free(this->str_val);										 // Free memory
 	this->str_val = (char*)calloc(other.Length(), sizeof(char)); // Allocate new memory
@@ -131,9 +131,9 @@ const char* Type::String::ToUpper(const char* str)
 	return copyStr.GetStringVal();
 }
 
-// Operators
+// Boolean Operators
 
-bool Type::String::operator==(const String& other) const
+bool Type::String::operator==(const Type::String& other) const
 {
 	if (this->Length() != other.Length())
 		return false;
@@ -145,7 +145,73 @@ bool Type::String::operator==(const String& other) const
 	return true;
 }
 
-bool Type::String::operator!=(const String& other) const
+bool Type::String::operator!=(const Type::String& other) const
 {
 	return !(*this == other);
+}
+
+// Concatenation operators
+
+void Type::String::operator+=(const Type::String& other)
+{
+	// Calculate length
+	uint_16 length = this->Length();
+
+	this->str_val = (char*)realloc(this->str_val, (length + other.Length()) * sizeof(char)); // Change size of memory
+
+	for (uint_16 i = length; i < length + other.Length(); i++)
+		this->str_val[i] = other.CharAt(i - length);
+
+	this->str_val[other.Length()] = 0; // Null-terminate
+}
+
+void Type::String::operator+=(const char*& other)
+{
+	// Calculate length
+	uint_16 length = this->Length(), otherLength = 0;
+	while (other[otherLength] != 0) otherLength++; // Null-terminated (Don't count null char)
+
+	this->str_val = (char*)realloc(this->str_val, (length + otherLength) * sizeof(char)); // Change size of memory
+
+	for (uint_16 i = length; i < length + otherLength; i++)
+		this->str_val[i] = other[i - length];
+
+	this->str_val[length + otherLength] = 0; // Null-terminate
+}
+
+void Type::String::operator+=(const char& chr)
+{
+	// Calculate length
+	uint_16 length = this->Length();
+
+	this->str_val = (char*)realloc(this->str_val, (length + 1) * sizeof(char)); // Change size of memory
+
+	for (uint_16 i = length; i < length + 1; i++)
+		this->str_val[i] = chr;
+
+	this->str_val[length + 1] = 0; // Null-terminate
+}
+
+Type::String Type::String::operator+(const Type::String& other) const
+{
+	Type::String copyStr = *this;
+	copyStr += other;
+
+	return copyStr;
+}
+
+Type::String Type::String::operator+(const char*& other) const
+{
+	Type::String copyStr = *this;
+	copyStr += other;
+
+	return copyStr.GetStringVal();
+}
+
+Type::String Type::String::operator+(const char& chr) const
+{
+	Type::String copyStr = *this;
+	copyStr += chr;
+
+	return copyStr.GetStringVal();
 }

@@ -16,6 +16,7 @@ KERNELFILEDIR = Kernel_Files/
 
 # Cpp files relative to Kernel_Files
 cppFiles =  CommandLineInterface/CLI.cpp \
+			CommandLineInterface/Commands.cpp \
 			CommandLineInterface/Debug.cpp \
 			Memory/Heap.cpp \
 			InputOutput/Interrupts/IDT.cpp \

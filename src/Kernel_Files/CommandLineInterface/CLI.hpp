@@ -17,8 +17,8 @@ namespace CLI
 	void PrintPrefix(uint_16 position = 0);
 	void Initialise();
 
-	void SetCursorPosition(uint_16 position);				// Set the position of the cursor
-	void ShiftLine(uint_16 position, uint_16 shiftAmt = 1); // Shifts the line over and replaces the character at the index
+	void SetCursorPosition(uint_16 position);		  // Set the position of the cursor
+	void ShiftLine(uint_16 position, short shiftAmt); // Shifts the line over and replaces the character at the index
 
 	void ClearScreen(uint_64 ClearColour = DEFAULT_COLOUR); // Clear screen to particular colour
 

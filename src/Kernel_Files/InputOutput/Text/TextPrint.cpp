@@ -72,12 +72,14 @@ void PrintString(Type::String str, uint_8 colour) // Used to print a string to t
 
 void PrintChar(char chr, uint_8 colour)
 {
+	if (CLI::CursorPosition != CLI::FinalLetterPositions[CLI::CursorLine] + CLI::CursorLine * VGA_WIDTH) // Isn't the last char on line
+		CLI::ShiftLine(CLI::CursorPosition, 1);
+
+	CLI::FinalLetterPositions[CLI::CursorLine]++; // Increment final position
+
 	// Set the Video Memory of char and colour
 	*(VGA_MEMORY + CLI::CursorPosition * 2) = chr;
 	*(VGA_MEMORY + CLI::CursorPosition * 2 + 1) = colour;
-
-	if (CLI::CursorPosition == CLI::FinalLetterPositions[CLI::CursorLine] + CLI::CursorLine * VGA_WIDTH) // Is the last char on line
-		CLI::FinalLetterPositions[CLI::CursorLine]++;
 
 	uint_16 PrevCursorLine = CLI::CursorLine;
 

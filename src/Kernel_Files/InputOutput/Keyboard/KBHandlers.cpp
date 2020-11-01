@@ -29,13 +29,25 @@ void StandardKeyboardHandler(uint_8 scanCode, uint_8 chr)
 		case 0x8E: // Backspace
 			if (CLI::CursorPosition > CLI::FirstLetterPositions[CLI::CursorLine])
 			{
-				CLI::SetCursorPosition(CLI::CursorPosition - 1);
-				PrintChar(' ');
-				CLI::SetCursorPosition(CLI::CursorPosition - 1);
-				CLI::FinalLetterPositions[CLI::CursorLine] -= 2;
+				bool wasOnFinalLetter = CLI::CursorPosition >= CLI::FinalLetterPositions[CLI::CursorLine];
+				if (wasOnFinalLetter) // Allows you to delete the char before when on the final character of a line (the space)
+					CLI::SetCursorPosition(CLI::CursorPosition - 1);
 
-				if ((CLI::CursorPosition + 1) / VGA_WIDTH == 0) // Just left a previous line
-					CLI::FinalCursorLine--;
+				CLI::ShiftLine(CLI::CursorPosition, -1); // Remove character
+				CLI::FinalLetterPositions[CLI::CursorLine]--;
+				CLI::SetCursorPosition(CLI::CursorPosition - 1); // Set new position
+
+				if ((CLI::CursorPosition + 1) % VGA_WIDTH == 0) // Just left a previous line
+				{
+					Debug::Log("Left line");
+
+					CLI::SetCursorPosition(CLI::FinalLetterPositions[CLI::CursorLine]);
+
+					if (CLI::FinalLetterPositions[CLI::CursorLine + 1] <= CLI::FirstLetterPositions[CLI::CursorLine + 1]) // The line is now empty
+						CLI::FinalCursorLine--;
+				}
+				else if (wasOnFinalLetter) // Didn't leave a line and was the final letter
+					CLI::SetCursorPosition(CLI::CursorPosition + 1);
 			}
 			break;
 		case 0x2A: // LShift
@@ -54,10 +66,15 @@ void StandardKeyboardHandler(uint_8 scanCode, uint_8 chr)
 
 			if (CLI::CursorLine < CLI::MaxCursorLine) // Stop overflow
 			{
-				CLI::FinalCursorLine++;
+				if (CLI::CursorLine == CLI::FinalCursorLine) // On the final line
+				{
+					CLI::FinalCursorLine++;
+					CLI::SetCursorPosition(CLI::FirstLetterPositions[CLI::CursorLine + 1] + (CLI::CursorLine + 1) * VGA_WIDTH);
+					break;
+				}
 
 				// Same code as Down Arrow
-				if (CLI::CursorPosition + VGA_WIDTH <= CLI::FinalLetterPositions[CLI::CursorLine + 1] + (CLI::CursorLine + 1) * VGA_WIDTH)
+				if (CLI::CursorPosition + VGA_WIDTH <= CLI::FinalLetterPositions[CLI::CursorLine + 1] + (CLI::CursorLine + 1) * VGA_WIDTH) // If you are above the char of the below line
 					CLI::SetCursorPosition(CLI::CursorPosition + VGA_WIDTH);
 				else
 					CLI::SetCursorPosition(CLI::FinalLetterPositions[CLI::CursorLine + 1] + (CLI::CursorLine + 1) * VGA_WIDTH);

@@ -49,11 +49,41 @@ namespace CLI
 		CursorLine = position / VGA_WIDTH;
 	}
 
-	void ShiftLine(uint_16 position, uint_16 shiftAmt) // Shifts the line over and replaces the character at the index
+	void ShiftLine(uint_16 position, short shiftAmt) // Shifts the line over (bytes) and replaces the character at the index
 	{
-		uint_16 line = position / VGA_WIDTH;
-		uint_16 charBuffer = *(VGA_MEMORY + line * VGA_WIDTH + FinalLetterPositions[line]);
-		uint_16 colourBuffer = *(VGA_MEMORY + line * VGA_WIDTH + FinalLetterPositions[line] + 1);
+		const bool sign = shiftAmt >> (sizeof(shiftAmt) - 1); // Get the most significant bit
+
+		shiftAmt *= (sign ? -1 : +1); // Absolute value of shiftAmt
+
+		uint_16 temp = (position >= 1) ?
+						   *((uint_16*)VGA_MEMORY + position) :
+						   (DEFAULT_COLOUR << 8) + ' ';
+
+		uint_16* buffer = (position >= 1) ?
+							  ((uint_16*)VGA_MEMORY + (sign ? (position / VGA_WIDTH + 1) * VGA_WIDTH - 1 : position)) :
+							  &temp;
+
+		for (uint_16 i = 0; i < shiftAmt; i++)
+		{
+			for (short j = (sign ? (position / VGA_WIDTH + 1) * VGA_WIDTH - 1 : 0);
+				 (sign ? position + j >= position :
+						 position + j < (position / VGA_WIDTH + 1) * VGA_WIDTH);
+				 j += (sign ? -1 : +1))
+			{
+				temp = *((uint_16*)VGA_MEMORY + position + j);
+
+				*((uint_16*)VGA_MEMORY + position + j) = *buffer;
+
+				*buffer = temp;
+			}
+
+			// ((sign) ?
+			// 	 *((uint_16*)VGA_MEMORY + position) :
+			// 	 *buffer)
+			// 	= (DEFAULT_COLOUR << 8) + ' '; // Set value to space
+
+			*buffer = (DEFAULT_COLOUR << 8) + ' '; // Set value to space)
+		}
 	}
 
 	void ClearScreen(uint_64 ClearColour) // Clear screen to particular colour

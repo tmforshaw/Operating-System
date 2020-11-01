@@ -14,12 +14,14 @@
 extern "C" void _StartKernel()
 {
 	InitialiseIDT();
-	MainKeyboardHandler = &DebugKeyboardHandler; // Set Keyboard Handler
+	MainKeyboardHandler = &KeyboardHandler; // Set Keyboard Handler
 	InitialiseHeap(0x100000, 0x100000);
 	MemoryMapEntry **UsableMemoryMaps = GetUsableMemoryRegions(); // Find usable memory
 
 	CLI::Initialise(); // Initialise Command Line Interface
 	Debug::Initialise();
+
+	// PrintString("This is a test string for the shits and giggles ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
 
 	return;
 }

@@ -1,9 +1,10 @@
+#include "../CommandLineInterface/CLI.hpp"
 #include "../InputOutput/Text/TextPrint.hpp"
 #include "./MemoryMap.hpp"
 
 uint_8 UsableMemoryRegionCount;
 
-MemoryMapEntry* UsableMemoryRegions[10];
+MemoryMapEntry* UsableMemoryRegions[250];
 
 void PrintMemoryMap(MemoryMapEntry* memoryMap, uint_16 position)
 {

@@ -4,6 +4,7 @@
 #include "../InputOutput/Keyboard/KBHandlers.hpp"
 #include "../InputOutput/Text/TextPrint.hpp"
 #include "../Memory/Heap.hpp"
+#include "../Memory/Memory.hpp"
 #include "../Memory/MemoryMap.hpp"
 #include "../Types/String.hpp"
 #include "../Types/Types.hpp"
@@ -16,22 +17,69 @@ extern "C" void _StartKernel()
 	InitialiseIDT();
 	MainKeyboardHandler = &ConsoleKeyboardHandler; // Set Keyboard Handler
 	InitialiseHeap(0x100000, 0x100000);
-	MemoryMapEntry **UsableMemoryMaps = GetUsableMemoryRegions(); // Find usable memory
+	MemoryMapEntry** UsableMemoryMaps = GetUsableMemoryRegions(); // Find usable memory
 
 	CLI::Initialise(); // Initialise Command Line Interface
 	Debug::Initialise();
 
-	PrintString("echo one two three");
+	PrintString("echo one two three aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 
-	// CLI::ParseCommand(CLI::FirstLetterPositions[CLI::CursorLine]);
+	// CLI::ParseCommand(CLI::CursorLine);
+	// Type::String testStr = "Test";
 
-	Type::String hello = "Hello World";
+	// // Calculate length
+	// uint_16 length = testStr.Length();
 
-	hello += " Goodbye";
+	// testStr.str_val = (char*)realloc(testStr.str_val, (length + 2) * sizeof(char));
 
-	PrintString(hello);
+	// void* newMem = calloc(length + 2, sizeof(char));
+	// memcpy(newMem, (void*)testStr.str_val, length);
+
+	// PrintString(HexToString((uint_64)testStr.str_val));
+
+	// free(testStr.str_val);
+
+	// Debug::LogHex((uint_64)testStr.str_val);
+
+	// testStr.str_val = (char*)newMem;
+
+	// Debug::Log(" ");
+
+	// Debug::LogHex((uint_64)testStr.str_val);
+
+	// PrintString("   ");
+	// PrintString(HexToString((uint_64)testStr.str_val));
+
+	// testStr.str_val[length] = 'A';
+	// testStr.str_val[length + 1] = 0; // Null-terminate
+
+	// PrintString(testStr);
+
+	// // Calculate length
+	// length = testStr.Length();
+
+	// testStr.str_val = (char*)realloc(testStr.str_val, (length + 2) * sizeof(char));
+
+	// void* newMem2 = calloc(length + 2, sizeof(char));
+	// memcpy(newMem, (void*)testStr.str_val, length);
+	// free(testStr.str_val);
+	// testStr.str_val = (char*)newMem;
+
+	// testStr.str_val[length] = 'B';
+	// testStr.str_val[length + 1] = 0; // Null-terminate
+
+	// PrintString(testStr);
+
+	// testStr += 'A';
+
+	// PrintString(testStr);
+
+	// testStr += 'B';
+
+	// PrintString("\n\r");
+	// PrintString(testStr.str_val);
 
 	return;
 }
 
-// WHEN YOU OVERTYPE A LINE THE MOVEMENT BREAKS
+// CANNOT DELETE THE LAST LETTER OF A LINE IF YOU ARE ON THE NULL CHAR

@@ -1,3 +1,4 @@
+#include "../../CommandLineInterface/CLI.hpp"
 #include "../IO.hpp"
 #include "./TextPrint.hpp"
 
@@ -22,8 +23,8 @@ void PrintString(const char* str, uint_8 colour) // Used to print a string to th
 			index -= index % VGA_WIDTH;
 			break;
 		default:
-			*(VGA_MEMORY + index * 2) = *charPtr;	// Multiplied by 2 because of formatting value
-			*(VGA_MEMORY + index * 2 + 1) = colour; // Set the formatting value
+			CLI::charGrid[(index - (index % VGA_WIDTH)) / VGA_WIDTH][index % VGA_WIDTH] = *charPtr; // Set the char value
+			CLI::colGrid[(index - (index % VGA_WIDTH)) / VGA_WIDTH][index % VGA_WIDTH] = colour;	// Set the formatting value
 			index++;
 			CLI::FinalLetterPositions[CLI::CursorLine]++;
 		}
@@ -32,6 +33,8 @@ void PrintString(const char* str, uint_8 colour) // Used to print a string to th
 	}
 
 	CLI::SetCursorPosition(index);
+
+	CLI::DisplayScreen();
 }
 
 void PrintString(Type::String str, uint_8 colour) // Used to print a string to the screen
@@ -50,24 +53,27 @@ void PrintString(Type::String str, uint_8 colour) // Used to print a string to t
 			index -= index % VGA_WIDTH;
 			break;
 		default:
-			*(VGA_MEMORY + index * 2) = str[i];		// Multiplied by 2 because of formatting value
-			*(VGA_MEMORY + index * 2 + 1) = colour; // Set the formatting value
-			index++;
+			CLI::charGrid[(index - (index % VGA_WIDTH)) / VGA_WIDTH][index % VGA_WIDTH] = str[i]; // Set the char value
+			CLI::colGrid[(index - (index % VGA_WIDTH)) / VGA_WIDTH][index % VGA_WIDTH] = colour;  // Set the formatting value
+
+			if (CLI::CursorLine < index / VGA_WIDTH) // Check if we are on next line
+			{
+				CLI::CursorLine++;
+				CLI::FinalCursorLine++;
+
+				index += CLI::FirstLetterPositions[CLI::CursorLine];
+			}
 
 			if (index == CLI::FinalLetterPositions[CLI::CursorLine] + CLI::CursorLine * VGA_WIDTH) // Is the last char on line
 				CLI::FinalLetterPositions[CLI::CursorLine]++;
 
-			if (CLI::CursorLine < CLI::CursorPosition / VGA_WIDTH) // Check if we are on next line
-			{
-				CLI::CursorLine++;
-
-				// if (CLI::CursorLine > CLI::FinalCursorLine) // If that was the final line
-				// 	CLI::FinalCursorLine++;
-			}
+			index++;
 		}
 	}
 
 	CLI::SetCursorPosition(index);
+
+	CLI::DisplayScreen();
 }
 
 void PrintChar(char chr, uint_8 colour)
@@ -77,9 +83,8 @@ void PrintChar(char chr, uint_8 colour)
 
 	CLI::FinalLetterPositions[CLI::CursorLine]++; // Increment final position
 
-	// Set the Video Memory of char and colour
-	*(VGA_MEMORY + CLI::CursorPosition * 2) = chr;
-	*(VGA_MEMORY + CLI::CursorPosition * 2 + 1) = colour;
+	CLI::charGrid[(CLI::CursorPosition - (CLI::CursorPosition % VGA_WIDTH)) / VGA_WIDTH][CLI::CursorPosition % VGA_WIDTH] = chr;   // Set the char value
+	CLI::colGrid[(CLI::CursorPosition - (CLI::CursorPosition % VGA_WIDTH)) / VGA_WIDTH][CLI::CursorPosition % VGA_WIDTH] = colour; // Set the formatting value
 
 	uint_16 PrevCursorLine = CLI::CursorLine;
 
@@ -88,6 +93,8 @@ void PrintChar(char chr, uint_8 colour)
 	if (PrevCursorLine < CLI::CursorLine)			// Check if we are on the next line
 		if (CLI::CursorLine > CLI::FinalCursorLine) // If that was the final line
 			CLI::FinalCursorLine++;
+
+	CLI::DisplayScreen();
 }
 
 char GetCharAtPos(uint_16 position) { return *(VGA_MEMORY + CLI::CursorPosition); }

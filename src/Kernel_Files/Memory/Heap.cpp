@@ -54,15 +54,15 @@ void* calloc(uint_64 num, uint_64 size)
 	return calloc(num * size);
 }
 
-void* realloc(void* address, uint_64 newSize)
+void* realloc(void* address, uint_64 newSize) // THIS IS BROKEN SOMEHOW
 {
 	MemorySegmentHeader* OldSegmentHeader;
-	AlignedMemorySegmentHeader* AMSH = (AlignedMemorySegmentHeader*)address - 1;
+	AlignedMemorySegmentHeader* AMSH = ((AlignedMemorySegmentHeader*)address) - 1;
 
 	if (AMSH->IsAligned)
 		OldSegmentHeader = (MemorySegmentHeader*)(uint_64)AMSH->MemorySegmentHeaderAddress;
 	else
-		OldSegmentHeader = (MemorySegmentHeader*)address - 1;
+		OldSegmentHeader = ((MemorySegmentHeader*)address) - 1;
 
 	uint_64 smallerSize = newSize;
 
@@ -166,7 +166,7 @@ void* aligned_alloc(uint_64 alignment, uint_64 size)
 	{
 		address += alignment;
 
-		AlignedMemorySegmentHeader* AMSH = (AlignedMemorySegmentHeader*)address - 1;
+		AlignedMemorySegmentHeader* AMSH = ((AlignedMemorySegmentHeader*)address) - 1;
 		AMSH->IsAligned = true;
 		AMSH->MemorySegmentHeaderAddress = (uint_64)mallocVal - sizeof(MemorySegmentHeader);
 	}
@@ -177,12 +177,12 @@ void* aligned_alloc(uint_64 alignment, uint_64 size)
 void free(void* address)
 {
 	MemorySegmentHeader* CurrentMemorySegment;
-	AlignedMemorySegmentHeader* AMSH = (AlignedMemorySegmentHeader*)address - 1;
+	AlignedMemorySegmentHeader* AMSH = ((AlignedMemorySegmentHeader*)address) - 1;
 
 	if (AMSH->IsAligned)
 		CurrentMemorySegment = (MemorySegmentHeader*)(uint_64)AMSH->MemorySegmentHeaderAddress;
 	else
-		CurrentMemorySegment = (MemorySegmentHeader*)address - 1;
+		CurrentMemorySegment = ((MemorySegmentHeader*)address) - 1;
 
 	CurrentMemorySegment->Free = true;
 

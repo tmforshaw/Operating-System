@@ -6,7 +6,7 @@
 
 namespace CLI
 {
-	Type::String outPrefix = "$ ";
+	const char* outPrefix = "$ ";
 
 	uint_16 CursorPosition = 0;
 	uint_16 CursorLine = 0;
@@ -17,20 +17,46 @@ namespace CLI
 
 	uint_16 MaxCursorLine = VGA_HEIGHT - Debug::DebugSize;
 
+	char charGrid[VGA_HEIGHT][VGA_WIDTH];
+	uint_8 colGrid[VGA_HEIGHT][VGA_WIDTH];
+
 	void PrintPrefix(uint_16 position)
 	{
 		SetCursorPosition(position);
 
 		PrintString(outPrefix);
 
-		FirstLetterPositions[CursorLine] += outPrefix.Length();
+		int len = 0;
+		while (outPrefix[len] != 0) len++;
+
+		FirstLetterPositions[CursorLine] += len;
 
 		CurrentTypingLine = CursorLine;
+	}
+
+	void DisplayScreen()
+	{
+		for (uint_16 i = 0; i < VGA_HEIGHT * VGA_WIDTH; i++)
+		{
+			// Set 4 Places at a time
+			uint_64 value = 0;
+			value += ((uint_64)colGrid[i / VGA_WIDTH][i % VGA_WIDTH] << 8) + ((uint_64)charGrid[i / VGA_WIDTH][i % VGA_WIDTH]);
+			i++;
+			value += ((uint_64)colGrid[i / VGA_WIDTH][i % VGA_WIDTH] << (8 * 3)) + ((uint_64)charGrid[i / VGA_WIDTH][i % VGA_WIDTH] << (8 * 2));
+			i++;
+			value += ((uint_64)colGrid[i / VGA_WIDTH][i % VGA_WIDTH] << (8 * 5)) + ((uint_64)charGrid[i / VGA_WIDTH][i % VGA_WIDTH] << (8 * 4));
+			i++;
+			value += ((uint_64)colGrid[i / VGA_WIDTH][i % VGA_WIDTH] << (8 * 7)) + ((uint_64)charGrid[i / VGA_WIDTH][i % VGA_WIDTH] << (8 * 6));
+
+			*((uint_64*)VGA_MEMORY + i / 4) = value;
+		}
 	}
 
 	void Initialise()
 	{
 		ClearScreen(); // This will initialise CursorLine, CursorPosition, FinalCursorLine, FirstPositions and FinalPositions
+
+		DisplayScreen();
 	}
 
 	void SetCursorPosition(uint_16 position) // Set the position of the cursor
@@ -47,47 +73,44 @@ namespace CLI
 
 	void ShiftLine(uint_16 position, short shiftAmt) // Shifts the line over (bytes) and replaces the character at the index
 	{
-		const bool sign = shiftAmt >> (sizeof(shiftAmt) - 1); // Get the most significant bit
+		const bool sign = shiftAmt >> (sizeof(shiftAmt) * 8 - 1); // Get the most significant bits
 
 		shiftAmt *= (sign ? -1 : +1); // Absolute value of shiftAmt
 
-		uint_16 temp = (position >= 0) ?
-						   *((uint_16*)VGA_MEMORY + position) :
-						   (DEFAULT_COLOUR << 8) + ' ';
-
-		uint_16* buffer = (position >= 0 && position < CLI::MaxCursorLine * VGA_WIDTH) ?
-							  ((uint_16*)VGA_MEMORY + (sign ? (position / VGA_WIDTH + 1) * VGA_WIDTH - 1 : position)) :
-							  &temp;
-
-		for (uint_16 i = 0; i < shiftAmt; i++)
+		for (uint_16 k = 0; k < shiftAmt; k++)
 		{
-			for (short j = (sign ? (position / VGA_WIDTH + 1) * VGA_WIDTH - 1 : 0);
-				 (sign ? position + j >= position :
-						 position + j < (position / VGA_WIDTH + 1) * VGA_WIDTH);
-				 j += (sign ? -1 : +1))
+			uint_16 i = position / VGA_WIDTH;
+			short j = sign ? VGA_WIDTH - 1 : position % VGA_WIDTH;
+
+			uint_16 buffer = (sign ? j - 1 >= 0 : j + 1 < VGA_WIDTH) ?
+								 (((uint_16)colGrid[i][j - 1] << 8) + (uint_16)charGrid[i][j - 1]) :
+								 ((DEFAULT_COLOUR << 8) + ' '); // High is col, Low is char
+
+			uint_16 temp; // High is col, Low is char
+
+			for (; (sign ? j >= position % VGA_WIDTH : j < VGA_WIDTH); j += (sign ? -1 : +1)) // Breaks when on new line
 			{
-				temp = *((uint_16*)VGA_MEMORY + position + j);
+				temp = ((uint_16)colGrid[i][j] << 8) + (uint_16)charGrid[i][j];
 
-				*((uint_16*)VGA_MEMORY + position + j) = *buffer;
+				colGrid[i][j] = (uint_8)(buffer >> 8);	  // Get High
+				charGrid[i][j] = (uint_8)(buffer & 0xFF); // Get Low
 
-				*buffer = temp;
+				buffer = temp;
 			}
 
-			*buffer = (DEFAULT_COLOUR << 8) + ' '; // Set value to space)
+			buffer = (DEFAULT_COLOUR << 8) + ' ';
 		}
+		CLI::DisplayScreen();
 	}
 
 	void ClearScreen(uint_64 ClearColour) // Clear screen to particular colour
 	{
-		// Set 4 Places at a time
-		uint_64 value = 0;
-		value += ClearColour << 8;
-		value += ClearColour << 24;
-		value += ClearColour << 40;
-		value += ClearColour << 56;
-
-		for (uint_64* i = (uint_64*)VGA_MEMORY; i < (uint_64*)(VGA_MEMORY + VGA_WIDTH * VGA_HEIGHT); i++)
-			*i = value;
+		for (uint_16 i = 0; i < VGA_HEIGHT; i++)
+			for (uint_16 j = 0; j < VGA_WIDTH; j++)
+			{
+				colGrid[i][j] = DEFAULT_COLOUR;
+				charGrid[i][j] = ' ';
+			}
 
 		SetCursorPosition(0); // Reset cursor position
 
@@ -106,17 +129,18 @@ namespace CLI
 			FinalLetterPositions[i] = FirstLetterPositions[i];
 	}
 
-	void ParseCommand(uint_16 position)
+	void ParseCommand(uint_16 line)
 	{
-		Type::String line;
+		// Type::String lineStr;
 
-		for (uint_16* i = (uint_16*)(VGA_MEMORY + FirstLetterPositions[position / VGA_WIDTH] + (position / VGA_WIDTH) * VGA_WIDTH);
-			 i < (uint_16*)(VGA_MEMORY + ((position / VGA_WIDTH + 1) * VGA_WIDTH));
-			 i++)
+		// for (uint_16 i = FirstLetterPositions[line]; i < VGA_WIDTH; i++)
+		// {
+		// lineStr += 'a'; // (char)(*i & 0xF); // Lower byte of the char
+		// lineStr += 'a'; // (char)(*i & 0xF); // Lower byte of the char
 
-			// line += (char)(*i & 0xF); // Lower byte of the char
+		// }
 
-			Debug::Log(line);
+		// Debug::Log(lineStr);
 	}
 
 } // Namespace CLI

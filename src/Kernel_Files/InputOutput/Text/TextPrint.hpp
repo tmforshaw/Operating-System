@@ -1,12 +1,7 @@
 #pragma once
-#include "../../CommandLineInterface/CLI.hpp"
 #include "../../Types/String.hpp"
 #include "../../Types/Types.hpp"
 #include "./TextModeColourCodes.hpp"
-
-#define VGA_MEMORY (uint_8*)0xB8000
-#define VGA_WIDTH 80
-#define VGA_HEIGHT 25
 
 uint_16 PositionFromCoords(uint_8 x, uint_8 y);						// Turn an X and Y value into the index of the position on screen
 void PrintString(const char* str, uint_8 colour = DEFAULT_COLOUR);	// Used to print a string to the screen

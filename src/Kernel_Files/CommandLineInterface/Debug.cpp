@@ -15,24 +15,14 @@ void Debug::Initialise()
 void Debug::Clear()
 {
 	uint_16 PreviousCursorPosition = CLI::CursorPosition;
-	CLI::SetCursorPosition((VGA_HEIGHT - Debug::DebugSize) * VGA_WIDTH);
 
-	for (uint_16 i = 0; i < DebugSize; i++) // Will not show anything if the size is zero
+	for (uint_64 i = (VGA_HEIGHT - Debug::DebugSize) * VGA_WIDTH; i < VGA_WIDTH * VGA_HEIGHT; i++) // Will not show anything if the size is zero
 	{
-		// Set 4 Places at a time
-		uint_64 value = 0;
-		value += (uint_64)Debug::DebugColour << 8;
-		value += (uint_64)Debug::DebugColour << 24;
-		value += (uint_64)Debug::DebugColour << 40;
-		value += (uint_64)Debug::DebugColour << 56;
+		CLI::colGrid[(i - (i % VGA_WIDTH)) / VGA_WIDTH][i % VGA_WIDTH] = Debug::DebugColour;
+		// CLI::charGrid[(i - (i % VGA_WIDTH)) / VGA_WIDTH][i % VGA_WIDTH] = ' ';
 
-		for (uint_64* j = (uint_64*)(VGA_MEMORY + (VGA_HEIGHT * 2 - Debug::DebugSize * 2) * VGA_WIDTH); j < (uint_64*)(VGA_MEMORY + VGA_WIDTH * VGA_HEIGHT * 2); j++) // Times 2 becaue of colours
-			*j = value;
-
-		CLI::FirstLetterPositions[VGA_HEIGHT - Debug::DebugSize + i] = 0; // Reset first letters
+		CLI::FirstLetterPositions[(i - (i % VGA_WIDTH)) / VGA_WIDTH] = 0; // Reset first letters
 	}
-
-	CLI::SetCursorPosition(PreviousCursorPosition);
 }
 
 template<typename T>

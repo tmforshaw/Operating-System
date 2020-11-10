@@ -3,6 +3,10 @@
 #include "../Types/Types.hpp"
 #include "./Commands.hpp"
 
+#define VGA_MEMORY (uint_8*)0xB8000
+#define VGA_WIDTH 80
+#define VGA_HEIGHT 25
+
 namespace CLI
 {
 	extern uint_16 CursorPosition;
@@ -14,7 +18,11 @@ namespace CLI
 
 	extern uint_16 MaxCursorLine;
 
+	extern char charGrid[][VGA_WIDTH];
+	extern uint_8 colGrid[][VGA_WIDTH];
+
 	void PrintPrefix(uint_16 position = 0);
+	void DisplayScreen();
 	void Initialise();
 
 	void SetCursorPosition(uint_16 position);		  // Set the position of the cursor
@@ -22,6 +30,6 @@ namespace CLI
 
 	void ClearScreen(uint_64 ClearColour = DEFAULT_COLOUR); // Clear screen to particular colour
 
-	void ParseCommand(uint_16 position);
+	void ParseCommand(uint_16 line);
 
 } // namespace CLI

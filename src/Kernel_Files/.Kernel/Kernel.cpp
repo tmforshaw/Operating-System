@@ -22,7 +22,9 @@ extern "C" void _StartKernel()
 	CLI::Initialise(); // Initialise Command Line Interface
 	Debug::Initialise();
 
-	PrintString("echo one two three aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+	PrintString("echo one two three aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+
+	CLI::ParseCommand(0);
 
 	// CLI::ParseCommand(CLI::CursorLine);
 	// Type::String testStr = "Test";

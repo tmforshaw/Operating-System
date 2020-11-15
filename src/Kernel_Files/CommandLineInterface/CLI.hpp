@@ -1,7 +1,6 @@
 #pragma once
 #include "../InputOutput/Text/TextModeColourCodes.hpp"
 #include "../Types/Types.hpp"
-#include "./Commands.hpp"
 
 #define VGA_MEMORY (uint_8*)0xB8000
 #define VGA_WIDTH 80
@@ -30,6 +29,6 @@ namespace CLI
 
 	void ClearScreen(uint_64 ClearColour = DEFAULT_COLOUR); // Clear screen to particular colour
 
-	void ParseCommand(uint_16 line);
+	void ParseCommand(const uint_16& line);
 
 } // namespace CLI

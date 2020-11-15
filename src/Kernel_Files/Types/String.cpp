@@ -74,6 +74,8 @@ char Type::String::operator[](uint_16 index) const
 		return str_val[this->Length()]; // Return the null element
 }
 
+// Useful Functions
+
 uint_16 Type::String::Length() const
 {
 	uint_16 length = 0;

@@ -6,9 +6,9 @@ namespace Type
 	class String
 	{
 	private:
-	public:
 		char* str_val; // Address of string value
 
+	public:
 		// Constructors
 
 		String();
@@ -23,6 +23,8 @@ namespace Type
 
 		char& operator[](uint_16 index);
 		char operator[](uint_16 index) const;
+
+		// Useful Functions
 
 		uint_16 Length() const;
 		char CharAt(uint_16 index) const;

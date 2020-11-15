@@ -2,6 +2,7 @@
 #include "../InputOutput/Text/TextPrint.hpp"
 #include "../Types/String.hpp"
 #include "./CLI.hpp"
+#include "./Commands.hpp"
 #include "./Debug.hpp"
 
 namespace CLI
@@ -129,18 +130,84 @@ namespace CLI
 			FinalLetterPositions[i] = FirstLetterPositions[i];
 	}
 
-	void ParseCommand(uint_16 line)
+	const char* ParseWord(const uint_16 index, const char buffer[], const uint_16 wordPositions[][2])
 	{
-		// Type::String lineStr;
+		uint_16 length = wordPositions[index][1] - wordPositions[index][0] + 1;
+		char word[length + 1];
 
-		// for (uint_16 i = FirstLetterPositions[line]; i < VGA_WIDTH; i++)
-		// {
-		// lineStr += 'a'; // (char)(*i & 0xF); // Lower byte of the char
-		// lineStr += 'a'; // (char)(*i & 0xF); // Lower byte of the char
+		for (uint_16 j = 0; j < length; j++)
+			word[j] = buffer[wordPositions[index][0] + j];
 
-		// }
+		word[length] = 0; // Null terminate
 
-		// Debug::Log(lineStr);
+		const char* strWord = word;
+
+        uint_16 num = 0;
+        while(strWord[num] != 0) {
+            Debug::LogInt(strWord[num]);
+            Debug::LogChar(' ');
+
+            num++;
+        }
+
+        Debug::CurrentCursorLine++;
+
+		return strWord;
+	}
+
+	void GetWordPos(const char* string, const uint_16 wordCount, uint_16 (&wordPositions)[][2])
+	{
+		bool onWord = false;
+
+		for (uint_16 i = 0, wordPosIndex = 0; i < sizeof(string) / sizeof(string[0]); i++)
+		{
+			if (string[i] != ' ' && !onWord) // Just arrived on a word
+			{
+				onWord = true;
+				wordPositions[wordPosIndex][0] = i; // Set startpos
+			}
+
+			if (string[i] == ' ' && onWord) // Just left a word
+			{
+				onWord = false;
+				wordPositions[wordPosIndex][1] = i - 1; // Set endpos
+				wordPosIndex++;
+			}
+		}
+
+		wordPositions[wordCount - 1][1] = sizeof(string) / sizeof(string[0]) - 1; // Set final position
+	}
+
+	void ParseCommand(const uint_16& line)
+	{
+		char buffer[VGA_WIDTH - CLI::FirstLetterPositions[line]];
+
+		// Get Word Count and String
+
+		uint_16 wordCount = 0;
+		bool onWord = false;
+
+		for (uint_16 i = 0; i < sizeof(buffer) / sizeof(buffer[0]); i++)
+		{
+			buffer[i] = charGrid[line][i + CLI::FirstLetterPositions[line]];
+
+			if (buffer[i] != ' ' && !onWord) // Just arrived on a word
+			{
+				onWord = true;
+				wordCount++;
+			}
+
+			if (buffer[i] == ' ' && onWord) // Just left a word
+				onWord = false;
+		}
+
+		// Find word positions
+
+		uint_16 wordPositions[wordCount][2];
+		GetWordPos(buffer, wordCount, wordPositions); // Sets the wordPositions
+
+		// Pass the buffer, wordPositions, and ParseWord Function
+		Commands::ExecuteCommand(buffer, wordPositions, ParseWord);
 	}
 
 } // Namespace CLI

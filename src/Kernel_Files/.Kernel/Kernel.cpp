@@ -22,65 +22,6 @@ extern "C" void _StartKernel()
 	CLI::Initialise(); // Initialise Command Line Interface
 	Debug::Initialise();
 
-	PrintString("echo one two three aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-
-	CLI::ParseCommand(0);
-
-	// CLI::ParseCommand(CLI::CursorLine);
-	// Type::String testStr = "Test";
-
-	// // Calculate length
-	// uint_16 length = testStr.Length();
-
-	// testStr.str_val = (char*)realloc(testStr.str_val, (length + 2) * sizeof(char));
-
-	// void* newMem = calloc(length + 2, sizeof(char));
-	// memcpy(newMem, (void*)testStr.str_val, length);
-
-	// PrintString(HexToString((uint_64)testStr.str_val));
-
-	// free(testStr.str_val);
-
-	// Debug::LogHex((uint_64)testStr.str_val);
-
-	// testStr.str_val = (char*)newMem;
-
-	// Debug::Log(" ");
-
-	// Debug::LogHex((uint_64)testStr.str_val);
-
-	// PrintString("   ");
-	// PrintString(HexToString((uint_64)testStr.str_val));
-
-	// testStr.str_val[length] = 'A';
-	// testStr.str_val[length + 1] = 0; // Null-terminate
-
-	// PrintString(testStr);
-
-	// // Calculate length
-	// length = testStr.Length();
-
-	// testStr.str_val = (char*)realloc(testStr.str_val, (length + 2) * sizeof(char));
-
-	// void* newMem2 = calloc(length + 2, sizeof(char));
-	// memcpy(newMem, (void*)testStr.str_val, length);
-	// free(testStr.str_val);
-	// testStr.str_val = (char*)newMem;
-
-	// testStr.str_val[length] = 'B';
-	// testStr.str_val[length + 1] = 0; // Null-terminate
-
-	// PrintString(testStr);
-
-	// testStr += 'A';
-
-	// PrintString(testStr);
-
-	// testStr += 'B';
-
-	// PrintString("\n\r");
-	// PrintString(testStr.str_val);
-
 	return;
 }
 

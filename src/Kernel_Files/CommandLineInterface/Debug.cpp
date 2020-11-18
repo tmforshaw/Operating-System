@@ -5,7 +5,6 @@
 
 const char* Debug::DebugPrefix = "Debug: ";
 uint_16 Debug::CurrentCursorLine = VGA_HEIGHT - Debug::DebugSize;
-uint_8 Debug::DebugColour = BG_DARKGREY | FG_WHITE;
 
 void Debug::Initialise()
 {
@@ -18,7 +17,7 @@ void Debug::Clear()
 
 	for (uint_64 i = (VGA_HEIGHT - Debug::DebugSize) * VGA_WIDTH; i < VGA_WIDTH * VGA_HEIGHT; i++) // Will not show anything if the size is zero
 	{
-		CLI::colGrid[(i - (i % VGA_WIDTH)) / VGA_WIDTH][i % VGA_WIDTH] = Debug::DebugColour;
+		CLI::colGrid[(i - (i % VGA_WIDTH)) / VGA_WIDTH][i % VGA_WIDTH] = DEFAULT_DEBUG_COLOUR;
 		// CLI::charGrid[(i - (i % VGA_WIDTH)) / VGA_WIDTH][i % VGA_WIDTH] = ' ';
 
 		CLI::FirstLetterPositions[(i - (i % VGA_WIDTH)) / VGA_WIDTH] = 0; // Reset first letters
@@ -33,7 +32,7 @@ void Log(T value)
 		uint_16 PreviousCursorPosition = CLI::CursorPosition;
 		CLI::SetCursorPosition(CLI::FirstLetterPositions[Debug::CurrentCursorLine] + Debug::CurrentCursorLine * VGA_WIDTH);
 
-		PrintString(value, Debug::DebugColour);
+		PrintString(value, DEFAULT_DEBUG_COLOUR);
 
 		CLI::FirstLetterPositions[Debug::CurrentCursorLine] = CLI::CursorPosition - Debug::CurrentCursorLine * VGA_WIDTH; // Set new first position
 
@@ -49,7 +48,7 @@ void LogInt(T value)
 		uint_16 PreviousCursorPosition = CLI::CursorPosition;
 		CLI::SetCursorPosition(CLI::FirstLetterPositions[Debug::CurrentCursorLine] + Debug::CurrentCursorLine * VGA_WIDTH);
 
-		PrintString(IntegerToString(value), Debug::DebugColour);
+		PrintString(IntegerToString(value), DEFAULT_DEBUG_COLOUR);
 
 		CLI::FirstLetterPositions[Debug::CurrentCursorLine] = CLI::CursorPosition - Debug::CurrentCursorLine * VGA_WIDTH; // Set new first position
 
@@ -65,7 +64,7 @@ void LogHex(T value)
 		uint_16 PreviousCursorPosition = CLI::CursorPosition;
 		CLI::SetCursorPosition(CLI::FirstLetterPositions[Debug::CurrentCursorLine] + Debug::CurrentCursorLine * VGA_WIDTH);
 
-		PrintString(HexToString(value), Debug::DebugColour);
+		PrintString(HexToString(value), DEFAULT_DEBUG_COLOUR);
 
 		CLI::FirstLetterPositions[Debug::CurrentCursorLine] = CLI::CursorPosition - Debug::CurrentCursorLine * VGA_WIDTH; // Set new first position
 
@@ -83,7 +82,7 @@ void Debug::LogChar(char value)
 		uint_16 PreviousCursorPosition = CLI::CursorPosition;
 		CLI::SetCursorPosition(CLI::FirstLetterPositions[Debug::CurrentCursorLine] + Debug::CurrentCursorLine * VGA_WIDTH);
 
-		PrintChar(value, Debug::DebugColour);
+		PrintChar(value, DEFAULT_DEBUG_COLOUR);
 
 		CLI::FirstLetterPositions[Debug::CurrentCursorLine]++; // Set new first position
 

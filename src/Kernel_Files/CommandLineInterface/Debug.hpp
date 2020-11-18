@@ -8,7 +8,6 @@ public:
 	static const char* DebugPrefix;
 	const static uint_16 DebugSize = 2;
 	static uint_16 CurrentCursorLine;
-	static uint_8 DebugColour;
 
 	static void Initialise();
 	static void Clear();

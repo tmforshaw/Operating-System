@@ -144,25 +144,12 @@ void CLIKeyboardHandler(uint_8 scanCode, uint_8 chr)
 		case 0xB6: // RShift Released
 			RShiftPressed = false;
 			break;
-		case 0x9C: // Enter
+		case 0x9C:								// Enter
+			CLI::ParseCommand(CLI::CursorLine); // Find and execute commands
 
-			// Enter command
+			CLI::SetCursorPosition(VGA_WIDTH * (CLI::CursorLine + 1)); // Increment line
+			CLI::PrintPrefix(CLI::CursorLine);
 
-			// if (CLI::CursorLine < CLI::MaxCursorLine) // Stop overflow
-			// {
-			// 	if (CLI::CursorLine == CLI::FinalCursorLine) // On the final line
-			// 	{
-			// 		CLI::FinalCursorLine++;
-			// 		CLI::SetCursorPosition(CLI::FirstLetterPositions[CLI::CursorLine + 1] + (CLI::CursorLine + 1) * VGA_WIDTH);
-			// 		break;
-			// 	}
-
-			// 	// Same code as Down Arrow
-			// 	if (CLI::CursorPosition + VGA_WIDTH <= CLI::FinalLetterPositions[CLI::CursorLine + 1] + (CLI::CursorLine + 1) * VGA_WIDTH) // If you are above the char of the below line
-			// 		CLI::SetCursorPosition(CLI::CursorPosition + VGA_WIDTH);
-			// 	else
-			// 		CLI::SetCursorPosition(CLI::FinalLetterPositions[CLI::CursorLine + 1] + (CLI::CursorLine + 1) * VGA_WIDTH);
-			// }
 			break;
 		default:
 			break;

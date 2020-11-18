@@ -2,17 +2,23 @@
 
 namespace CLI
 {
-	namespace Commands
+	struct Command
 	{
-		struct Command;
+		const char* m_name;
+		void (*callFunction)(const char strArgs[], const uint_16 wordPositions[][2], const uint_16 wordCount, const char* (&ParseWord)(const uint_16 index, const char strArgs[], const uint_16 wordPositions[][2])); // Function Pointer
 
-		// clang-format off
-	    extern const Command commands[];
+		Command();
+		Command(const char* name);
 
-		// clang-format on
+		Command(const char* name,
+				void (*function)(const char* strArgs, const uint_16 wordPositions[][2], const uint_16 wordCount, const char* (&ParseWord)(const uint_16 index, const char strArgs[], const uint_16 wordPositions[][2])));
+	};
 
-		void ExecuteCommand(const char strArgs[], const uint_16 wordPositions[][2], const char* (&ParseWord)(const uint_16 index, const char strArgs[], const uint_16 wordPositions[][2]));
+	extern Command* cmds;
 
-	} // Namespace Commands
+	void InitialiseCommands();
+	void DestroyCommands();
+
+	void ExecuteCommand(const char strArgs[], const uint_16 wordPositions[][2], const uint_16 wordCount, const char* (&ParseWord)(const uint_16 index, const char strArgs[], const uint_16 wordPositions[][2]));
 
 } // Namespace CLI

@@ -1,5 +1,6 @@
 #include "../InputOutput/IO.hpp"
 #include "../InputOutput/Text/TextPrint.hpp"
+#include "../Memory/Heap.hpp"
 #include "../Types/String.hpp"
 #include "./CLI.hpp"
 #include "./Commands.hpp"
@@ -21,9 +22,9 @@ namespace CLI
 	char charGrid[VGA_HEIGHT][VGA_WIDTH];
 	uint_8 colGrid[VGA_HEIGHT][VGA_WIDTH];
 
-	void PrintPrefix(uint_16 position)
+	void PrintPrefix(uint_16 line)
 	{
-		SetCursorPosition(position);
+		SetCursorPosition(VGA_WIDTH * line); // 0th position on the line
 
 		PrintString(outPrefix);
 
@@ -58,6 +59,8 @@ namespace CLI
 		ClearScreen(); // This will initialise CursorLine, CursorPosition, FinalCursorLine, FirstPositions and FinalPositions
 
 		DisplayScreen();
+
+		InitialiseCommands(); // Initialise the commands
 	}
 
 	void SetCursorPosition(uint_16 position) // Set the position of the cursor
@@ -133,33 +136,24 @@ namespace CLI
 	const char* ParseWord(const uint_16 index, const char buffer[], const uint_16 wordPositions[][2])
 	{
 		uint_16 length = wordPositions[index][1] - wordPositions[index][0] + 1;
-		char word[length + 1];
+		char* word = (char*)calloc(length + 1, sizeof(char)); // Allocate memory for word
 
 		for (uint_16 j = 0; j < length; j++)
 			word[j] = buffer[wordPositions[index][0] + j];
 
 		word[length] = 0; // Null terminate
 
-		const char* strWord = word;
-
-        uint_16 num = 0;
-        while(strWord[num] != 0) {
-            Debug::LogInt(strWord[num]);
-            Debug::LogChar(' ');
-
-            num++;
-        }
-
-        Debug::CurrentCursorLine++;
-
-		return strWord;
+		return (const char*)word;
 	}
 
 	void GetWordPos(const char* string, const uint_16 wordCount, uint_16 (&wordPositions)[][2])
 	{
 		bool onWord = false;
 
-		for (uint_16 i = 0, wordPosIndex = 0; i < sizeof(string) / sizeof(string[0]); i++)
+		uint_16 length = 0;
+		while (string[length] != 0) length++;
+
+		for (uint_16 i = 0, wordPosIndex = 0; i < length; i++)
 		{
 			if (string[i] != ' ' && !onWord) // Just arrived on a word
 			{
@@ -175,7 +169,7 @@ namespace CLI
 			}
 		}
 
-		wordPositions[wordCount - 1][1] = sizeof(string) / sizeof(string[0]) - 1; // Set final position
+		wordPositions[wordCount - 1][1] = length - 1; // Set final position
 	}
 
 	void ParseCommand(const uint_16& line)
@@ -207,7 +201,7 @@ namespace CLI
 		GetWordPos(buffer, wordCount, wordPositions); // Sets the wordPositions
 
 		// Pass the buffer, wordPositions, and ParseWord Function
-		Commands::ExecuteCommand(buffer, wordPositions, ParseWord);
+		ExecuteCommand(buffer, wordPositions, wordCount, ParseWord);
 	}
 
 } // Namespace CLI

@@ -20,14 +20,15 @@ namespace CLI
 	extern char charGrid[][VGA_WIDTH];
 	extern uint_8 colGrid[][VGA_WIDTH];
 
-	void PrintPrefix(uint_16 position = 0);
+	void PrintPrefix(uint_16 line = 0);
 	void DisplayScreen();
 	void Initialise();
+	void Destroy();
 
-	void SetCursorPosition(uint_16 position);		  // Set the position of the cursor
-	void ShiftLine(uint_16 position, short shiftAmt); // Shifts the line over and replaces the character at the index
+	void SetCursorPosition(uint_16 position); // Set the position of the cursor
+	void ShiftLine(uint_16 position, short);  // Shifts the line over and replaces the character at the index
 
-	void ClearScreen(uint_64 ClearColour = DEFAULT_COLOUR); // Clear screen to particular colour
+	void ClearScreen(uint_64 ClearColour = DEFAULT_COLOUR, bool showWelcome = false); // Clear screen to particular colour
 
 	void ParseCommand(const uint_16& line);
 

@@ -9,6 +9,7 @@
 namespace CLI
 {
 	const char* outPrefix = "$ ";
+	const char* welcomeMessage = "Welcome to the Operating System";
 
 	uint_16 CursorPosition = 0;
 	uint_16 CursorLine = 0;
@@ -31,9 +32,9 @@ namespace CLI
 		int len = 0;
 		while (outPrefix[len] != 0) len++;
 
-		FirstLetterPositions[CursorLine] += len;
+		FirstLetterPositions[line] = len;
 
-		CurrentTypingLine = CursorLine;
+		CurrentTypingLine = line;
 	}
 
 	void DisplayScreen()
@@ -56,11 +57,16 @@ namespace CLI
 
 	void Initialise()
 	{
-		ClearScreen(); // This will initialise CursorLine, CursorPosition, FinalCursorLine, FirstPositions and FinalPositions
-
-		DisplayScreen();
+		ClearScreen(DEFAULT_COLOUR, true); // This will initialise CursorLine, CursorPosition, FinalCursorLine, FirstPositions and FinalPositions
 
 		InitialiseCommands(); // Initialise the commands
+
+		DisplayScreen();
+	}
+
+	void Destroy()
+	{
+		DestroyCommands();
 	}
 
 	void SetCursorPosition(uint_16 position) // Set the position of the cursor
@@ -107,7 +113,7 @@ namespace CLI
 		CLI::DisplayScreen();
 	}
 
-	void ClearScreen(uint_64 ClearColour) // Clear screen to particular colour
+	void ClearScreen(uint_64 ClearColour, bool showWelcome) // Clear screen to particular colour
 	{
 		for (uint_16 i = 0; i < VGA_HEIGHT; i++)
 			for (uint_16 j = 0; j < VGA_WIDTH; j++)
@@ -117,33 +123,30 @@ namespace CLI
 			}
 
 		SetCursorPosition(0); // Reset cursor position
-
 		FinalCursorLine = 0;
 
 		// Reset FirstPositions
 		for (uint_16 i = 0; i < VGA_HEIGHT; i++) // Set FirstPositions
 			FirstLetterPositions[i] = 0;
 
-		PrintPrefix();
+		if (showWelcome)
+		{
+			// Display a welcome message with 2 newlines
+			PrintString(welcomeMessage);
+			PrintString("\n\n\r");
+
+			uint_16 length = 0;
+			while (welcomeMessage[length] != 0) length++;
+			FirstLetterPositions[0] = length;
+		}
+
+		PrintPrefix(CLI::CursorLine); // Print the prefix
 
 		Debug::Clear();
 
 		// Reset FinalPositions
 		for (uint_16 i = 0; i < VGA_HEIGHT; i++) // Set FinalPositions
 			FinalLetterPositions[i] = FirstLetterPositions[i];
-	}
-
-	const char* ParseWord(const uint_16 index, const char buffer[], const uint_16 wordPositions[][2])
-	{
-		uint_16 length = wordPositions[index][1] - wordPositions[index][0] + 1;
-		char* word = (char*)calloc(length + 1, sizeof(char)); // Allocate memory for word
-
-		for (uint_16 j = 0; j < length; j++)
-			word[j] = buffer[wordPositions[index][0] + j];
-
-		word[length] = 0; // Null terminate
-
-		return (const char*)word;
 	}
 
 	void GetWordPos(const char* string, const uint_16 wordCount, uint_16 (&wordPositions)[][2])
@@ -159,6 +162,7 @@ namespace CLI
 			{
 				onWord = true;
 				wordPositions[wordPosIndex][0] = i; // Set startpos
+				continue;
 			}
 
 			if (string[i] == ' ' && onWord) // Just left a word
@@ -166,10 +170,12 @@ namespace CLI
 				onWord = false;
 				wordPositions[wordPosIndex][1] = i - 1; // Set endpos
 				wordPosIndex++;
+				continue;
 			}
-		}
 
-		wordPositions[wordCount - 1][1] = length - 1; // Set final position
+			if (i == length - 1)							 // On last one and hasn't been set
+				wordPositions[wordPosIndex][1] = length - 1; // Set final position
+		}
 	}
 
 	void ParseCommand(const uint_16& line)
@@ -200,8 +206,8 @@ namespace CLI
 		uint_16 wordPositions[wordCount][2];
 		GetWordPos(buffer, wordCount, wordPositions); // Sets the wordPositions
 
-		// Pass the buffer, wordPositions, and ParseWord Function
-		ExecuteCommand(buffer, wordPositions, wordCount, ParseWord);
+		// Pass the buffer, wordPositions, and wordCount
+		ExecuteCommand(buffer, wordPositions, wordCount);
 	}
 
 } // Namespace CLI

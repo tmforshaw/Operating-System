@@ -146,10 +146,6 @@ void CLIKeyboardHandler(uint_8 scanCode, uint_8 chr)
 			break;
 		case 0x9C:								// Enter
 			CLI::ParseCommand(CLI::CursorLine); // Find and execute commands
-
-			CLI::SetCursorPosition(VGA_WIDTH * (CLI::CursorLine + 1)); // Increment line
-			CLI::PrintPrefix(CLI::CursorLine);
-
 			break;
 		default:
 			break;

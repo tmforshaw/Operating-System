@@ -50,7 +50,7 @@ void PrintString(Type::String str, uint_8 colour) // Used to print a string to t
 			index += VGA_WIDTH;
 			break;
 		case '\r':
-			index -= index % VGA_WIDTH;
+			index = CLI::FirstLetterPositions[index / VGA_WIDTH] + VGA_WIDTH * (index / VGA_WIDTH);
 			break;
 		default:
 			CLI::charGrid[(index - (index % VGA_WIDTH)) / VGA_WIDTH][index % VGA_WIDTH] = str[i]; // Set the char value
@@ -78,21 +78,31 @@ void PrintString(Type::String str, uint_8 colour) // Used to print a string to t
 
 void PrintChar(char chr, uint_8 colour)
 {
-	if (CLI::CursorPosition != CLI::FinalLetterPositions[CLI::CursorLine] + CLI::CursorLine * VGA_WIDTH) // Isn't the last char on line
-		CLI::ShiftLine(CLI::CursorPosition, 1);
+	switch (chr)
+	{
+	case '\n':
+		CLI::SetCursorPosition(CLI::CursorPosition + VGA_WIDTH);
+		break;
+	case '\r':
+		CLI::SetCursorPosition(CLI::FirstLetterPositions[CLI::CursorLine] + VGA_WIDTH * CLI::CursorLine);
+		break;
+	default:
+		if (CLI::CursorPosition != CLI::FinalLetterPositions[CLI::CursorLine] + CLI::CursorLine * VGA_WIDTH) // Isn't the last char on line
+			CLI::ShiftLine(CLI::CursorPosition, 1);
 
-	CLI::FinalLetterPositions[CLI::CursorLine]++; // Increment final position
+		CLI::FinalLetterPositions[CLI::CursorLine]++; // Increment final position
 
-	CLI::charGrid[(CLI::CursorPosition - (CLI::CursorPosition % VGA_WIDTH)) / VGA_WIDTH][CLI::CursorPosition % VGA_WIDTH] = chr;   // Set the char value
-	CLI::colGrid[(CLI::CursorPosition - (CLI::CursorPosition % VGA_WIDTH)) / VGA_WIDTH][CLI::CursorPosition % VGA_WIDTH] = colour; // Set the formatting value
+		CLI::charGrid[(CLI::CursorPosition - (CLI::CursorPosition % VGA_WIDTH)) / VGA_WIDTH][CLI::CursorPosition % VGA_WIDTH] = chr;   // Set the char value
+		CLI::colGrid[(CLI::CursorPosition - (CLI::CursorPosition % VGA_WIDTH)) / VGA_WIDTH][CLI::CursorPosition % VGA_WIDTH] = colour; // Set the formatting value
 
-	uint_16 PrevCursorLine = CLI::CursorLine;
+		uint_16 PrevCursorLine = CLI::CursorLine;
 
-	CLI::SetCursorPosition(CLI::CursorPosition + 1);
+		CLI::SetCursorPosition(CLI::CursorPosition + 1);
 
-	if (PrevCursorLine < CLI::CursorLine)			// Check if we are on the next line
-		if (CLI::CursorLine > CLI::FinalCursorLine) // If that was the final line
-			CLI::FinalCursorLine++;
+		if (PrevCursorLine < CLI::CursorLine)			// Check if we are on the next line
+			if (CLI::CursorLine > CLI::FinalCursorLine) // If that was the final line
+				CLI::FinalCursorLine++;
+	}
 
 	CLI::DisplayScreen();
 }

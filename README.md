@@ -2,6 +2,9 @@
 
 ------------------------
 
+## Notice
+This project is not longer under development
+
 ## Description
 A simple 64-Bit operating system that I made using resources on the internet and YouTube. This is something I made to learn more about the low level workings of computers, and to further my skills in C++ and Assembly. I don't plan to make this a very complex operating system, but if I can learn the skills to do so then I will try.
 
